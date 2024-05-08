@@ -1,4 +1,4 @@
-package com.em.expensemanager;
+package hr.assecosee.internship.expensemanager;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
