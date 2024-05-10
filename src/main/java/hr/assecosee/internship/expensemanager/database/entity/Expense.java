@@ -8,25 +8,28 @@ import java.util.Objects;
 public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "EXPENSE_ID", nullable = false)
+    @Column(name = "expense_id", nullable = false)
     private Integer expenseId;
     @Basic
-    @Column(name = "USER_ID", nullable = false, insertable = false, updatable = false)
+    @Column(name = "user_id", nullable = false, insertable = false, updatable = false)
     private Integer userId;
     @Basic
-    @Column(name = "CATEGORY_ID", nullable = false, insertable = false, updatable = false)
+    @Column(name = "category_id", nullable = false, insertable = false, updatable = false)
     private Integer categoryId;
     @Basic
-    @Column(name = "DESCRIPTION", nullable = true, length = -1)
+    @Column(name = "description", nullable = true, length = -1)
     private String description;
     @Basic
-    @Column(name = "TIME", nullable = false)
+    @Column(name = "time", nullable = false)
     private Object time;
+    @Basic
+    @Column(name = "amount", nullable = false, precision = 0)
+    private Double amount;
     @ManyToOne
-    @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User usersByUserId;
     @ManyToOne
-    @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "CATEGORY_ID", nullable = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false)
     private Category categoryByCategoryId;
 
     public Integer getExpenseId() {
@@ -69,17 +72,25 @@ public class Expense {
         this.time = time;
     }
 
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Expense expense = (Expense) o;
-        return Objects.equals(expenseId, expense.expenseId) && Objects.equals(userId, expense.userId) && Objects.equals(categoryId, expense.categoryId) && Objects.equals(description, expense.description) && Objects.equals(time, expense.time);
+        return Objects.equals(expenseId, expense.expenseId) && Objects.equals(userId, expense.userId) && Objects.equals(categoryId, expense.categoryId) && Objects.equals(description, expense.description) && Objects.equals(time, expense.time) && Objects.equals(amount, expense.amount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(expenseId, userId, categoryId, description, time);
+        return Objects.hash(expenseId, userId, categoryId, description, time, amount);
     }
 
     public User getUsersByUserId() {

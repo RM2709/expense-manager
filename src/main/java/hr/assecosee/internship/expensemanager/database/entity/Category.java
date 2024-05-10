@@ -9,13 +9,13 @@ import java.util.Objects;
 public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "CATEGORY_ID", nullable = false)
+    @Column(name = "category_id", nullable = false)
     private Integer categoryId;
     @Basic
-    @Column(name = "NAME", nullable = false, length = -1)
+    @Column(name = "name", nullable = false, length = -1)
     private String name;
     @Basic
-    @Column(name = "DESCRIPTION", nullable = true, length = -1)
+    @Column(name = "description", nullable = true, length = -1)
     private String description;
     @OneToMany(mappedBy = "categoryByCategoryId")
     private Collection<Expense> expensesByCategoryId;

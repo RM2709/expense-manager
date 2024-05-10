@@ -6,20 +6,20 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Entity
-@Table(name = "USERS", schema = "public", catalog = "user")
+@Table(name = "users", schema = "public", catalog = "user")
 public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "USER_ID", nullable = false)
+    @Column(name = "user_id", nullable = false)
     private Integer userId;
     @Basic
-    @Column(name = "FIRST_NAME", nullable = false, length = -1)
+    @Column(name = "first_name", nullable = false, length = -1)
     private String firstName;
     @Basic
-    @Column(name = "LAST_NAME", nullable = false, length = -1)
+    @Column(name = "last_name", nullable = false, length = -1)
     private String lastName;
     @Basic
-    @Column(name = "EMAIL", nullable = true, length = -1)
+    @Column(name = "email", nullable = true, length = -1)
     private String email;
     @OneToMany(mappedBy = "usersByUserId")
     private Collection<Expense> expensesByUserId;
