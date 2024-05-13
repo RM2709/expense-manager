@@ -3,7 +3,9 @@ package hr.assecosee.internship.expensemanager.dto;
 import lombok.Data;
 
 @Data
-public class UserDto extends StatusDto{
+public class UserDto implements Dto{
+
+    private StatusDto status;
     private Integer userId;
     private String fullName;
     private String firstName;

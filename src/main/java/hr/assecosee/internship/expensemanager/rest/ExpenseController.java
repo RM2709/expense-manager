@@ -1,6 +1,7 @@
 package hr.assecosee.internship.expensemanager.rest;
 
 import hr.assecosee.internship.expensemanager.core.ExpenseService;
+import hr.assecosee.internship.expensemanager.dto.Dto;
 import hr.assecosee.internship.expensemanager.dto.StatusDto;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,8 @@ public class ExpenseController {
     }
 
     @GetMapping("/{expenseId}")
-    public ResponseEntity<StatusDto> getExpense(@PathVariable Integer expenseId) {
-        return expenseService.getExpense(expenseId);
+    public ResponseEntity<Dto> getExpense(@PathVariable Integer expenseId) {
+        return ResponseEntity.ok(expenseService.getExpense(expenseId));
     }
 
 }

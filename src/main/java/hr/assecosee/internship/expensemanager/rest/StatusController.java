@@ -2,6 +2,7 @@ package hr.assecosee.internship.expensemanager.rest;
 
 
 import hr.assecosee.internship.expensemanager.core.StatusService;
+import hr.assecosee.internship.expensemanager.dto.Dto;
 import hr.assecosee.internship.expensemanager.dto.StatusDto;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ public class StatusController {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<StatusDto> getStatus() {
-        return statusService.status();
+    public ResponseEntity<Dto> getStatus() {
+        return ResponseEntity.ok(statusService.status());
     }
 
 }

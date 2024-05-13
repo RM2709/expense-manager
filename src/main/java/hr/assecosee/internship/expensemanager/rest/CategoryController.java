@@ -1,6 +1,7 @@
 package hr.assecosee.internship.expensemanager.rest;
 
 import hr.assecosee.internship.expensemanager.core.CategoryService;
+import hr.assecosee.internship.expensemanager.dto.Dto;
 import hr.assecosee.internship.expensemanager.dto.StatusDto;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class CategoryController {
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<StatusDto> getCategory(@PathVariable Integer categoryId) {
-        return categoryService.getCategory(categoryId);
+    public ResponseEntity<Dto> getCategory(@PathVariable Integer categoryId) {
+        return ResponseEntity.ok(categoryService.getCategory(categoryId));
     }
 
 }
