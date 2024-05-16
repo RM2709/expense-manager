@@ -2,6 +2,8 @@ package hr.assecosee.internship.expensemanager.dto;
 
 import lombok.Data;
 
+import java.sql.Date;
+
 @Data
 public class ExpenseDto implements Dto{
     private StatusDto status;
@@ -10,5 +12,5 @@ public class ExpenseDto implements Dto{
     private String categoryName;
     private String description;
     private Double amount;
-    private Object time;
+    private Date time;
 }

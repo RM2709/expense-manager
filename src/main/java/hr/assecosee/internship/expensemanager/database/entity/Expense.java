@@ -2,6 +2,7 @@ package hr.assecosee.internship.expensemanager.database.entity;
 
 import jakarta.persistence.*;
 
+import java.sql.Date;
 import java.util.Objects;
 
 @Entity
@@ -23,13 +24,13 @@ public class Expense {
     @Column(name = "amount", nullable = false, precision = 0)
     private Double amount;
     @Basic
-    @Column(name = "time", nullable = false, length = -1)
-    private String time;
+    @Column(name = "time", nullable = false)
+    private Date time;
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, updatable = false, insertable = false)
     private User usersByUserId;
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false, updatable = false, insertable = false)
     private Category categoryByCategoryId;
 
     public Integer getExpenseId() {
@@ -72,11 +73,11 @@ public class Expense {
         this.amount = amount;
     }
 
-    public String getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 
