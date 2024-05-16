@@ -28,6 +28,12 @@ public class UserService {
 
     public Dto createUser(UserInfoDto userInfo) {
         User newUser = new User();
+        if(userInfo.getFirstName()==null){
+            userInfo.setFirstName("");
+        }
+        if(userInfo.getLastName()==null){
+            userInfo.setLastName("");
+        }
         newUser.setFirstName(userInfo.getFirstName());
         newUser.setLastName(userInfo.getLastName());
         newUser.setEmail(userInfo.getEmail());
@@ -67,6 +73,6 @@ public class UserService {
         } else{
             return new StatusWrapper(new StatusDto(1, "User with id="+userId+" does not exist!"));
         }
-
     }
+
 }

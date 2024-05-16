@@ -8,5 +8,5 @@ public class ExpenseInfoDto implements Dto{
     private Integer categoryId;
     private String description;
     private Double amount;
-    private Object time;
+    private String time;
 }

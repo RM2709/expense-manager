@@ -11,25 +11,25 @@ public class Expense {
     @Column(name = "expense_id", nullable = false)
     private Integer expenseId;
     @Basic
-    @Column(name = "user_id", nullable = false, insertable = false, updatable = false)
+    @Column(name = "user_id", nullable = false)
     private Integer userId;
     @Basic
-    @Column(name = "category_id", nullable = false, insertable = false, updatable = false)
+    @Column(name = "category_id", nullable = false)
     private Integer categoryId;
     @Basic
     @Column(name = "description", nullable = true, length = -1)
     private String description;
     @Basic
-    @Column(name = "time", nullable = false)
-    private Object time;
-    @Basic
     @Column(name = "amount", nullable = false, precision = 0)
     private Double amount;
+    @Basic
+    @Column(name = "time", nullable = false, length = -1)
+    private String time;
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, insertable = false, updatable = false)
     private User usersByUserId;
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false, insertable = false, updatable = false)
     private Category categoryByCategoryId;
 
     public Integer getExpenseId() {
@@ -64,14 +64,6 @@ public class Expense {
         this.description = description;
     }
 
-    public Object getTime() {
-        return time;
-    }
-
-    public void setTime(Object time) {
-        this.time = time;
-    }
-
     public Double getAmount() {
         return amount;
     }
@@ -80,17 +72,25 @@ public class Expense {
         this.amount = amount;
     }
 
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Expense expense = (Expense) o;
-        return Objects.equals(expenseId, expense.expenseId) && Objects.equals(userId, expense.userId) && Objects.equals(categoryId, expense.categoryId) && Objects.equals(description, expense.description) && Objects.equals(time, expense.time) && Objects.equals(amount, expense.amount);
+        return Objects.equals(expenseId, expense.expenseId) && Objects.equals(userId, expense.userId) && Objects.equals(categoryId, expense.categoryId) && Objects.equals(description, expense.description) && Objects.equals(amount, expense.amount) && Objects.equals(time, expense.time);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(expenseId, userId, categoryId, description, time, amount);
+        return Objects.hash(expenseId, userId, categoryId, description, amount, time);
     }
 
     public User getUsersByUserId() {
