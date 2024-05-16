@@ -8,10 +8,8 @@ import hr.assecosee.internship.expensemanager.database.repository.ExpenseReposit
 import hr.assecosee.internship.expensemanager.database.repository.UserRepository;
 import hr.assecosee.internship.expensemanager.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.task.TaskExecutionProperties;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 @Service
@@ -98,8 +96,55 @@ public class ExpenseService {
             expenseRepository.deleteById(expenseId);
             return new StatusWrapper(new StatusDto(0, "No error!"));
         } else{
-            return new StatusWrapper(new StatusDto(1, "User with id="+expenseId+" does not exist!"));
+            return new StatusWrapper(new StatusDto(1, "Expense with id="+expenseId+" does not exist!"));
         }
     }
 
+    public Dto getExpensesByUser(Integer userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()){
+            return new StatusWrapper(new StatusDto(1, "User with id="+userId+" does not exist!"));
+        }
+        ExpensesByUserDto expensesByUserDto = new ExpensesByUserDto();
+        StatusDto status = new StatusDto(0, "No error!");
+        expensesByUserDto.setStatus(status);
+        UserDto user = new UserDto();
+        user.setUserId(userOptional.get().getUserId());
+        user.setFullName(userOptional.get().getFirstName() + " " + userOptional.get().getLastName());
+        user.setEmail(userOptional.get().getEmail());
+        expensesByUserDto.setUser(user);
+        for (Expense expense : expenseRepository.findAllByUserId(userId)) {
+            expensesByUserDto.getExpenses().add(new ExpenseDto(expense.getCategoryByCategoryId().getName(), expense.getDescription(), expense.getAmount(), expense.getTime()));
+        }
+        return expensesByUserDto;
+    }
+
+    public Dto getExpensesByCategory(Integer categoryId) {
+        Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
+        if(categoryOptional.isEmpty()){
+            return new StatusWrapper(new StatusDto(1, "Category with id="+categoryId+" does not exist!"));
+        }
+        ExpensesByCategoryDto expensesByCategoryDto = new ExpensesByCategoryDto();
+        StatusDto status = new StatusDto(0, "No error!");
+        expensesByCategoryDto.setStatus(status);
+        CategoryDto category = new CategoryDto();
+        category.setCategoryId(categoryOptional.get().getCategoryId());
+        category.setName(categoryOptional.get().getName());
+        category.setDescription(categoryOptional.get().getDescription());
+        expensesByCategoryDto.setCategory(category);
+        for (Expense expense : expenseRepository.findAllByCategoryId(categoryId)) {
+            expensesByCategoryDto.getExpenses().add(new ExpenseDto(expense.getExpenseId(), expense.getUsersByUserId().getFirstName() + " " + expense.getUsersByUserId().getLastName(), expense.getDescription(), expense.getAmount(), expense.getTime()));
+        }
+        return expensesByCategoryDto;
+    }
+
+    public Dto getExpensesByTimeframe(TimeframeDto timeframeDto) {
+        ExpensesByCategoryDto expensesByTimeframeDto = new ExpensesByCategoryDto();
+        StatusDto status = new StatusDto(0, "No error!");
+        expensesByTimeframeDto.setStatus(status);
+        for (Expense expense : expenseRepository.findAllByTimeBetween(timeframeDto.getExpenseFrom(), timeframeDto.getExpenseTo())) {
+            expensesByTimeframeDto.getExpenses().add(new ExpenseDto(expense.getExpenseId(), expense.getCategoryByCategoryId().getName(), expense.getUsersByUserId().getFirstName() + " " + expense.getUsersByUserId().getLastName(), expense.getDescription(), expense.getAmount(), expense.getTime()));
+        }
+        return expensesByTimeframeDto;
+    }
 }

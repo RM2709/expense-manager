@@ -2,6 +2,7 @@ package hr.assecosee.internship.expensemanager.rest;
 import hr.assecosee.internship.expensemanager.core.UserService;
 import hr.assecosee.internship.expensemanager.dto.UserInfoDto;
 import hr.assecosee.internship.expensemanager.dto.Dto;
+import jakarta.websocket.server.PathParam;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,8 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<Dto> getUser(@PathVariable Integer userId) {
+    @GetMapping(value = "/", params = "userId")
+    public ResponseEntity<Dto> getUser(@PathParam("userId") Integer userId) {
         return ResponseEntity.ok(userService.getUser(userId));
     }
 
@@ -29,13 +30,13 @@ public class UserController {
         return ResponseEntity.ok(userService.createUser(userInfo));
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<Dto> updateUser(@PathVariable Integer userId, @RequestBody UserInfoDto userInfo){
+    @PutMapping(value = "/", params = "userId")
+    public ResponseEntity<Dto> updateUser(@PathParam("userId") Integer userId, @RequestBody UserInfoDto userInfo){
         return ResponseEntity.ok(userService.updateUser(userId, userInfo));
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Dto> deleteUser(@PathVariable Integer userId){
+    @DeleteMapping(value = "/", params = "userId")
+    public ResponseEntity<Dto> deleteUser(@PathParam("userId") Integer userId){
         return ResponseEntity.ok((userService.deleteUser(userId)));
     }
 

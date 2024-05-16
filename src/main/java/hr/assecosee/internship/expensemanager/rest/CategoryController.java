@@ -5,6 +5,7 @@ import hr.assecosee.internship.expensemanager.dto.CategoryInfoDto;
 import hr.assecosee.internship.expensemanager.dto.Dto;
 import hr.assecosee.internship.expensemanager.dto.StatusDto;
 import hr.assecosee.internship.expensemanager.dto.UserInfoDto;
+import jakarta.websocket.server.PathParam;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +23,8 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/{categoryId}")
-    public ResponseEntity<Dto> getCategory(@PathVariable Integer categoryId) {
+    @GetMapping(value = "/", params = "categoryId")
+    public ResponseEntity<Dto> getCategory(@PathParam("categoryId") Integer categoryId) {
         return ResponseEntity.ok(categoryService.getCategory(categoryId));
     }
 
@@ -32,13 +33,13 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.createCategory(categoryInfo));
     }
 
-    @PutMapping("/{categoryId}")
-    public ResponseEntity<Dto> updateCategory(@PathVariable Integer categoryId, @RequestBody CategoryInfoDto categoryInfo){
+    @PutMapping(value = "/", params = "categoryId")
+    public ResponseEntity<Dto> updateCategory(@PathParam("categoryId") Integer categoryId, @RequestBody CategoryInfoDto categoryInfo){
         return ResponseEntity.ok(categoryService.updateCategory(categoryId, categoryInfo));
     }
 
-    @DeleteMapping("/{categoryId}")
-    public ResponseEntity<Dto> deleteCategory(@PathVariable Integer categoryId){
+    @DeleteMapping(value = "/", params = "categoryId")
+    public ResponseEntity<Dto> deleteCategory(@PathParam("categoryId") Integer categoryId){
         return ResponseEntity.ok((categoryService.deleteCategory(categoryId)));
     }
 

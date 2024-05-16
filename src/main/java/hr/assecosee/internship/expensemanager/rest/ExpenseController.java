@@ -1,11 +1,8 @@
 package hr.assecosee.internship.expensemanager.rest;
 
 import hr.assecosee.internship.expensemanager.core.ExpenseService;
-import hr.assecosee.internship.expensemanager.database.entity.Expense;
-import hr.assecosee.internship.expensemanager.dto.CategoryInfoDto;
-import hr.assecosee.internship.expensemanager.dto.Dto;
-import hr.assecosee.internship.expensemanager.dto.ExpenseInfoDto;
-import hr.assecosee.internship.expensemanager.dto.StatusDto;
+import hr.assecosee.internship.expensemanager.dto.*;
+import jakarta.websocket.server.PathParam;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +21,8 @@ public class ExpenseController {
         this.expenseService = expenseService;
     }
 
-    @GetMapping("/{expenseId}")
-    public ResponseEntity<Dto> getExpense(@PathVariable Integer expenseId) {
+    @GetMapping(value = "/", params = "expenseId")
+    public ResponseEntity<Dto> getExpense(@PathParam("expenseId") Integer expenseId) {
         return ResponseEntity.ok(expenseService.getExpense(expenseId));
     }
 
@@ -34,14 +31,29 @@ public class ExpenseController {
         return ResponseEntity.ok(expenseService.createExpense(expenseInfo));
     }
 
-    @PutMapping("/{expenseId}")
-    public ResponseEntity<Dto> updateExpense(@PathVariable Integer expenseId, @RequestBody ExpenseInfoDto expenseInfo){
+    @PutMapping(value = "/", params = "expenseId")
+    public ResponseEntity<Dto> updateExpense(@PathParam("expenseId") Integer expenseId, @RequestBody ExpenseInfoDto expenseInfo){
         return ResponseEntity.ok(expenseService.updateExpense(expenseId, expenseInfo));
     }
 
-    @DeleteMapping("/{expenseId}")
-    public ResponseEntity<Dto> deleteExpense(@PathVariable Integer expenseId){
+    @DeleteMapping(value = "/", params = "expenseId")
+    public ResponseEntity<Dto> deleteExpense(@PathParam("expenseId") Integer expenseId){
         return ResponseEntity.ok((expenseService.deleteExpense(expenseId)));
+    }
+
+    @GetMapping(value = "/", params = "userId")
+    public ResponseEntity<Dto> getExpensesByUser(@PathParam("userId") Integer userId){
+        return ResponseEntity.ok(expenseService.getExpensesByUser(userId));
+    }
+
+    @GetMapping(value = "/", params = "categoryId")
+    public ResponseEntity<Dto> getExpensesByCategory(@PathParam("userId") Integer categoryId){
+        return ResponseEntity.ok(expenseService.getExpensesByCategory(categoryId));
+    }
+
+    @PostMapping("/time")
+    public ResponseEntity<Dto> getExpensesByTimeframe(@RequestBody TimeframeDto timeframeDto){
+        return ResponseEntity.ok(expenseService.getExpensesByTimeframe(timeframeDto));
     }
 
 }
