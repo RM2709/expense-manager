@@ -1,8 +1,9 @@
 package hr.assecosee.internship.expensemanager.database.entity;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
@@ -24,13 +25,15 @@ public class Expense {
     @Column(name = "amount", nullable = false, precision = 0)
     private Double amount;
     @Basic
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     @Column(name = "time", nullable = false)
-    private Date time;
+    private Timestamp time;
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, updatable = false, insertable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, insertable = false, updatable = false)
     private User usersByUserId;
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false, updatable = false, insertable = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false, insertable = false, updatable = false)
     private Category categoryByCategoryId;
 
     public Integer getExpenseId() {
@@ -73,11 +76,11 @@ public class Expense {
         this.amount = amount;
     }
 
-    public Date getTime() {
+    public Timestamp getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(Timestamp time) {
         this.time = time;
     }
 

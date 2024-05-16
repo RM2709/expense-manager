@@ -1,8 +1,10 @@
 package hr.assecosee.internship.expensemanager.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Data
 public class ExpenseInfoDto implements Dto{
@@ -10,5 +12,6 @@ public class ExpenseInfoDto implements Dto{
     private Integer categoryId;
     private String description;
     private Double amount;
-    private Date time;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "CET")
+    private Timestamp time;
 }
