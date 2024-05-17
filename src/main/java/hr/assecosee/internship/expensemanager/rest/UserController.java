@@ -1,7 +1,15 @@
 package hr.assecosee.internship.expensemanager.rest;
 import hr.assecosee.internship.expensemanager.core.UserService;
+import hr.assecosee.internship.expensemanager.database.entity.User;
+import hr.assecosee.internship.expensemanager.dto.StatusWrapper;
+import hr.assecosee.internship.expensemanager.dto.UserDto;
 import hr.assecosee.internship.expensemanager.dto.UserInfoDto;
 import hr.assecosee.internship.expensemanager.dto.Dto;
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.websocket.server.PathParam;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,22 +29,27 @@ public class UserController {
     }
 
     @GetMapping(value = "/", params = "userId")
-    public ResponseEntity<Dto> getUser(@PathParam("userId") Integer userId) {
+    @Operation(summary = "Retrieve an user.", description = "Retrieves an existing user from the database. Response contains a status code, a message describing the outcome of the operation and the retrieved user's data (id, name, email).")
+    public ResponseEntity<Dto> getUser(@Parameter(description = "ID of the user to be retrieved", required = true) @PathParam("userId") Integer userId) {
         return ResponseEntity.ok(userService.getUser(userId));
     }
 
+
     @PostMapping("")
-    public ResponseEntity<Dto> createUser(@RequestBody UserInfoDto userInfo){
+    @Operation(summary = "Create a new user.", description = "Creates a new user and inserts it into the database. Response contains a status code, a message describing the outcome of the operation and the newly created user's data (id, name, email).")
+    public ResponseEntity<Dto> createUser(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "First name, last name, and email of the user to be created.", content = @Content(schema =@Schema(implementation = UserInfoDto.class))) @RequestBody UserInfoDto userInfo){
         return ResponseEntity.ok(userService.createUser(userInfo));
     }
 
     @PutMapping(value = "/", params = "userId")
-    public ResponseEntity<Dto> updateUser(@PathParam("userId") Integer userId, @RequestBody UserInfoDto userInfo){
+    @Operation(summary = "Update an existing user.", description = "Updates an existing user in the database. Response contains a status code, a message describing the outcome of the operation and the updated user's data (id, name, email).")
+    public ResponseEntity<Dto> updateUser(@Parameter(description = "ID of the user to be updated", required = true) @PathParam("userId") Integer userId,@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "First name, last name, and email of the user to be updated.", content = @Content(schema =@Schema(implementation = UserInfoDto.class))) @RequestBody UserInfoDto userInfo){
         return ResponseEntity.ok(userService.updateUser(userId, userInfo));
     }
 
     @DeleteMapping(value = "/", params = "userId")
-    public ResponseEntity<Dto> deleteUser(@PathParam("userId") Integer userId){
+    @Operation(summary = "Delete an existing user.", description = "Deletes an existing user from the database. Response contains a status code, a message describing the outcome of the operation.")
+    public ResponseEntity<Dto> deleteUser(@Parameter(description = "ID of the user to be deleted", required = true) @PathParam("userId") Integer userId){
         return ResponseEntity.ok((userService.deleteUser(userId)));
     }
 

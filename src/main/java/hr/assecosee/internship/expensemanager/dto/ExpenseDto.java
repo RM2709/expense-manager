@@ -39,6 +39,7 @@ public class ExpenseDto implements Dto{
     public ExpenseDto(Integer expenseId, String categoryName, String userFullName, String description, Double amount, Timestamp time) {
         this.expenseId = expenseId;
         this.userFullName = userFullName;
+        this.categoryName = categoryName;
         this.description = description;
         this.amount = amount;
         this.time = time;
