@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ExpenseDto implements Dto{
+public class ExpenseDto {
     private StatusDto status;
     private Integer expenseId;
     private String userFullName;

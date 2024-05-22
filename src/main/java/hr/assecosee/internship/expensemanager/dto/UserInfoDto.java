@@ -3,7 +3,7 @@ package hr.assecosee.internship.expensemanager.dto;
 import lombok.Data;
 
 @Data
-public class UserInfoDto implements Dto{
+public class UserInfoDto {
     private String firstName;
     private String lastName;
     private String email;

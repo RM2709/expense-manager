@@ -1,9 +1,10 @@
 package hr.assecosee.internship.expensemanager.core;
 
+import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import hr.assecosee.internship.expensemanager.database.entity.Category;
 import hr.assecosee.internship.expensemanager.database.repository.CategoryRepository;
 import hr.assecosee.internship.expensemanager.dto.*;
-import hr.assecosee.internship.expensemanager.util.ConvertCategoryDto;
+import hr.assecosee.internship.expensemanager.util.CategoryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class CategoryService {
      * @param categoryId ID of the category to be retrieved.
      * @return CategoryDto object containing a Status code, a message describing the outcome of the operation, and basic information of the retrieved category (id, name, description).
      */
-    public Dto getCategory(Integer categoryId){
+    public CategoryDto getCategory(Integer categoryId) throws ExpenseManagerException {
         Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
         if(categoryOptional.isPresent()){
             CategoryDto categoryDto = new CategoryDto();
@@ -37,7 +38,7 @@ public class CategoryService {
             categoryDto.setDescription(categoryOptional.get().getDescription());
             return categoryDto;
         } else{
-            return new StatusWrapper(new StatusDto(1, "Category with id="+categoryId+" not found!"));
+            throw new ExpenseManagerException(1, "Category with id="+categoryId+" not found!");
         }
     }
 
@@ -47,7 +48,7 @@ public class CategoryService {
      * @param categoryInfo JSON object which contains the name and description of the category to be created.
      * @return Status code, a message describing the outcome of the operation, and basic information of the created category (id, name, description).
      */
-    public Dto createCategory(CategoryInfoDto categoryInfo) {
+    public CategoryDto createCategory(CategoryInfoDto categoryInfo) {
         Category newCategory = new Category();
         if(categoryInfo.getName()==null){
             categoryInfo.setName("");
@@ -55,7 +56,7 @@ public class CategoryService {
         newCategory.setName(categoryInfo.getName());
         newCategory.setDescription(categoryInfo.getDescription());
         newCategory = categoryRepository.save(newCategory);
-        return ConvertCategoryDto.getCategoryDto(newCategory);
+        return CategoryMapper.getCategoryDto(newCategory);
     }
 
     /**
@@ -65,16 +66,16 @@ public class CategoryService {
      * @param categoryInfo JSON object which contains the name and description of the category to be updated.
      * @return Status code, a message describing the outcome of the operation, and basic information of the updated category (id, name, description).
      */
-    public Dto updateCategory(Integer categoryId, CategoryInfoDto categoryInfo) {
+    public CategoryDto updateCategory(Integer categoryId, CategoryInfoDto categoryInfo) throws ExpenseManagerException {
         Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
         if(categoryOptional.isPresent()){
             Category updatedCategory = categoryOptional.get();
             updatedCategory.setName(categoryInfo.getName());
             updatedCategory.setDescription(categoryInfo.getDescription());
             categoryRepository.save(updatedCategory);
-            return ConvertCategoryDto.getCategoryDto(updatedCategory);
+            return CategoryMapper.getCategoryDto(updatedCategory);
         } else {
-            return new StatusWrapper(new StatusDto(1, "Category with id="+categoryId+" does not exist!"));
+            throw new ExpenseManagerException(1, "Category with id="+categoryId+" does not exist!");
         }
     }
 
@@ -84,12 +85,12 @@ public class CategoryService {
      * @param categoryId ID of the category to be deleted.
      * @return Status code and a message describing the outcome of the operation.
      */
-    public Dto deleteCategory(Integer categoryId) {
+    public Response deleteCategory(Integer categoryId) throws ExpenseManagerException {
         if(categoryRepository.findById(categoryId).isPresent()){
             categoryRepository.deleteById(categoryId);
-            return new StatusWrapper(new StatusDto(0, "No error!"));
+            return new Response(0, "No error!");
         } else{
-            return new StatusWrapper(new StatusDto(1, "Category with id="+categoryId+" does not exist!"));
+            throw new ExpenseManagerException(1, "Category with id="+categoryId+" does not exist!");
         }
     }
 }

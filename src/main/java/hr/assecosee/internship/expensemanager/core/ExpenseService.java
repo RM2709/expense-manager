@@ -1,5 +1,6 @@
 package hr.assecosee.internship.expensemanager.core;
 
+import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import hr.assecosee.internship.expensemanager.database.entity.Category;
 import hr.assecosee.internship.expensemanager.database.entity.Expense;
 import hr.assecosee.internship.expensemanager.database.entity.User;
@@ -7,7 +8,7 @@ import hr.assecosee.internship.expensemanager.database.repository.CategoryReposi
 import hr.assecosee.internship.expensemanager.database.repository.ExpenseRepository;
 import hr.assecosee.internship.expensemanager.database.repository.UserRepository;
 import hr.assecosee.internship.expensemanager.dto.*;
-import hr.assecosee.internship.expensemanager.util.ConvertExpenseDto;
+import hr.assecosee.internship.expensemanager.util.ExpenseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,7 @@ public class ExpenseService {
      * @param expenseId ID of the expense to be retrieved.
      * @return ExpenseDto object containing a status message and basic information of the retrieved expense (id, user full name, category name, description, amount, time).
      */
-    public Dto getExpense(Integer expenseId){
+    public ExpenseDto getExpense(Integer expenseId) throws ExpenseManagerException {
         Optional<Expense> expenseOptional = expenseRepository.findById(expenseId);
         if(expenseOptional.isPresent()){
                 ExpenseDto expenseDto = new ExpenseDto();
@@ -48,7 +49,7 @@ public class ExpenseService {
                 expenseDto.setTime(expenseOptional.get().getTime());
                 return expenseDto;
         } else{
-            return new StatusWrapper(new StatusDto(1, "Expense with id="+expenseId+" not found!"));
+            throw new ExpenseManagerException(1, "Expense with id="+expenseId+" not found!");
         }
     }
 
@@ -58,14 +59,14 @@ public class ExpenseService {
      * @param expenseInfo JSON object which contains the user id, category id, description, amount, and time of the expense to be created.
      * @return Status code, a message describing the outcome of the operation, and basic information of the created expense (id, user full name, category name, description, amount, time).
      */
-    public Dto createExpense(ExpenseInfoDto expenseInfo) {
+    public ExpenseDto createExpense(ExpenseInfoDto expenseInfo) throws ExpenseManagerException {
         Optional<User> userOptional = userRepository.findById(expenseInfo.getUserId());
         if(userOptional.isEmpty()){
-            return new StatusWrapper(new StatusDto(1, "User with id="+expenseInfo.getUserId()+" does not exist!"));
+            throw new ExpenseManagerException(1, "User with id="+expenseInfo.getUserId()+" not found!");
         }
         Optional<Category> categoryOptional = categoryRepository.findById(expenseInfo.getCategoryId());
         if(categoryOptional.isEmpty()){
-            return new StatusWrapper(new StatusDto(1, "Category with id="+expenseInfo.getCategoryId()+" does not exist!"));
+            throw new ExpenseManagerException(1, "Category with id="+expenseInfo.getCategoryId()+" not found!");
         }
         Expense newExpense = new Expense();
         newExpense.setUserId(expenseInfo.getUserId());
@@ -76,7 +77,7 @@ public class ExpenseService {
         newExpense.setAmount(expenseInfo.getAmount());
         newExpense.setTime(expenseInfo.getTime());
         newExpense = expenseRepository.save(newExpense);
-        return ConvertExpenseDto.getExpenseDto(newExpense, newExpense.getUsersByUserId(), newExpense.getCategoryByCategoryId());
+        return ExpenseMapper.getExpenseDto(newExpense, newExpense.getUsersByUserId(), newExpense.getCategoryByCategoryId());
     }
 
     /**
@@ -86,7 +87,7 @@ public class ExpenseService {
      * @param expenseInfo JSON object which contains the user id, category id, description, amount, and time of the expense to be updated.
      * @return Status code, a message describing the outcome of the operation, and basic information of the updated expense (id, user full name, category name, description, amount, time)
      */
-    public Dto updateExpense(Integer expenseId, ExpenseInfoDto expenseInfo) {
+    public ExpenseDto updateExpense(Integer expenseId, ExpenseInfoDto expenseInfo) throws ExpenseManagerException {
         Optional<Expense> updatedExpense = expenseRepository.findById(expenseId);
         if(updatedExpense.isPresent()){
             updatedExpense.get().setUserId(expenseInfo.getUserId());
@@ -95,9 +96,9 @@ public class ExpenseService {
             updatedExpense.get().setAmount(expenseInfo.getAmount());
             updatedExpense.get().setTime(expenseInfo.getTime());
             expenseRepository.save(updatedExpense.get());
-            return ConvertExpenseDto.getExpenseDto(updatedExpense.get(), updatedExpense.get().getUsersByUserId(), updatedExpense.get().getCategoryByCategoryId());
+            return ExpenseMapper.getExpenseDto(updatedExpense.get(), updatedExpense.get().getUsersByUserId(), updatedExpense.get().getCategoryByCategoryId());
         } else{
-            return new StatusWrapper(new StatusDto(1, "Expense with id="+expenseId+" does not exist!"));
+            throw new ExpenseManagerException(1, "Expense with id="+expenseId+" not found!");
         }
 
     }
@@ -108,12 +109,12 @@ public class ExpenseService {
      * @param expenseId ID of the expense to be deleted.
      * @return Status code and a message describing the outcome of the operation.
      */
-    public Dto deleteExpense(Integer expenseId) {
+    public Response deleteExpense(Integer expenseId) throws ExpenseManagerException {
         if(expenseRepository.findById(expenseId).isPresent()){
             expenseRepository.deleteById(expenseId);
-            return new StatusWrapper(new StatusDto(0, "No error!"));
+            return new Response(0, "No error!");
         } else{
-            return new StatusWrapper(new StatusDto(1, "Expense with id="+expenseId+" does not exist!"));
+            throw new ExpenseManagerException(1, "Expense with id="+expenseId+" does not exist!");
         }
     }
 
@@ -123,10 +124,10 @@ public class ExpenseService {
      * @param userId ID of the user whose expenses are being retrieved.
      * @return Status code, a message describing the outcome of the operation,information on the selected user (id, name, email), and information on all the expenses incurred by said user (category name, description, amount, time)."
      */
-    public Dto getExpensesByUser(Integer userId) {
+    public ExpensesByUserDto getExpensesByUser(Integer userId) throws ExpenseManagerException {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isEmpty()){
-            return new StatusWrapper(new StatusDto(1, "User with id="+userId+" does not exist!"));
+            throw new ExpenseManagerException(1, "User with id="+userId+" does not exist!");
         }
         ExpensesByUserDto expensesByUserDto = new ExpensesByUserDto();
         StatusDto status = new StatusDto(0, "No error!");
@@ -148,10 +149,10 @@ public class ExpenseService {
      * @param categoryId ID of the category to which the expenses being retrieved belong.
      * @return Status code, a message describing the outcome of the operation, information on the selected category (id, name, description), and information on all the expenses belonging to said category (id, user name, description, amount, time).
      */
-    public Dto getExpensesByCategory(Integer categoryId) {
+    public ExpensesByCategoryDto getExpensesByCategory(Integer categoryId) throws ExpenseManagerException {
         Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
         if(categoryOptional.isEmpty()){
-            return new StatusWrapper(new StatusDto(1, "Category with id="+categoryId+" does not exist!"));
+            throw new ExpenseManagerException(1, "Category with id="+categoryId+" does not exist!");
         }
         ExpensesByCategoryDto expensesByCategoryDto = new ExpensesByCategoryDto();
         StatusDto status = new StatusDto(0, "No error!");
@@ -173,7 +174,7 @@ public class ExpenseService {
      * @param timeframeDto JSON object which contains two times in 'yyyy-MM-dd hh:mm:ss' format (from and to) in between which the expenses were made.
      * @return Status code, a message describing the outcome of the operation, and information on all the expenses made in the selected timeframe (id, user full name, category name, description, amount, time).
      */
-    public Dto getExpensesByTimeframe(TimeframeDto timeframeDto) {
+    public ExpensesByCategoryDto getExpensesByTimeframe(TimeframeDto timeframeDto) {
         ExpensesByCategoryDto expensesByTimeframeDto = new ExpensesByCategoryDto();
         StatusDto status = new StatusDto(0, "No error!");
         expensesByTimeframeDto.setStatus(status);

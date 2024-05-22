@@ -1,15 +1,11 @@
 package hr.assecosee.internship.expensemanager.core;
 
+import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import hr.assecosee.internship.expensemanager.database.entity.Category;
-import hr.assecosee.internship.expensemanager.database.entity.User;
 import hr.assecosee.internship.expensemanager.database.repository.CategoryRepository;
-import hr.assecosee.internship.expensemanager.database.repository.UserRepository;
 import hr.assecosee.internship.expensemanager.dto.CategoryInfoDto;
-import hr.assecosee.internship.expensemanager.dto.StatusDto;
-import hr.assecosee.internship.expensemanager.dto.StatusWrapper;
-import hr.assecosee.internship.expensemanager.dto.UserInfoDto;
-import hr.assecosee.internship.expensemanager.util.ConvertCategoryDto;
-import hr.assecosee.internship.expensemanager.util.ConvertUserDto;
+import hr.assecosee.internship.expensemanager.dto.Response;
+import hr.assecosee.internship.expensemanager.util.CategoryMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +14,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 public class CategoryServiceTest {
@@ -29,19 +27,18 @@ public class CategoryServiceTest {
     CategoryService categoryService;
 
     @Test
-    public void getCategory_CategoryIdIs15_CategoryRetrieved(){
+    public void getCategory_CategoryIdIs15_CategoryRetrieved() throws ExpenseManagerException {
         Optional<Category> testCategory = Optional.of(new Category());
         testCategory.get().setCategoryId(15);
         testCategory.get().setName("Test");
         testCategory.get().setDescription("Test");
         Mockito.when(categoryRepository.findById(15)).thenReturn(testCategory);
-        assert categoryService.getCategory(15).equals(ConvertCategoryDto.getCategoryDto(testCategory.get())) : "Unable to retrieve category with ID 15";
+        assert categoryService.getCategory(15).equals(CategoryMapper.getCategoryDto(testCategory.get())) : "Unable to retrieve category with ID 15";
     }
 
     @Test
     public void getCategory_CategoryIdIs12_CategoryNotRetrieved(){
-        StatusWrapper desiredResult = new StatusWrapper(new StatusDto(1, "Category with id=12 not found!"));
-        assert categoryService.getCategory(12).equals(desiredResult) : "Category with ID 12 exists";
+        assertThrows(ExpenseManagerException.class, () -> categoryService.getCategory(12), "Category retrieved when wrong ID was given");
     }
 
     @Test
@@ -57,7 +54,7 @@ public class CategoryServiceTest {
         createdCategory.setName("Test");
         createdCategory.setDescription("Test");
         Mockito.when(categoryRepository.save(newCategory)).thenReturn(createdCategory);
-        assert categoryService.createCategory(categoryInfo).equals(ConvertCategoryDto.getCategoryDto(createdCategory)) : "Category not created successfully";
+        assert categoryService.createCategory(categoryInfo).equals(CategoryMapper.getCategoryDto(createdCategory)) : "Category not created successfully";
     }
 
     @Test
@@ -65,19 +62,15 @@ public class CategoryServiceTest {
         CategoryInfoDto categoryInfo = new CategoryInfoDto();
         categoryInfo.setName("Test");
         categoryInfo.setDescription("Test");
-        Category updatedCategory = new Category();
-        updatedCategory.setCategoryId(15);
-        updatedCategory.setName("Test");
-        updatedCategory.setDescription("Test");
         Mockito.when(categoryRepository.findById(15)).thenReturn(Optional.empty());
-        assert !categoryService.updateCategory(15, categoryInfo).equals(ConvertCategoryDto.getCategoryDto(updatedCategory)) : "Category updated successfully when wrong info was given";
+        assertThrows(ExpenseManagerException.class, () -> categoryService.updateCategory(15, categoryInfo), "Category updated successfully when wrong info was provided");
     }
 
     @Test
-    public void deleteCategory_CategoryIdProvided_CategoryDeleted(){
+    public void deleteCategory_CategoryIdProvided_CategoryDeleted() throws ExpenseManagerException {
         Category deletedCategory = new Category();
         deletedCategory.setCategoryId(15);
         Mockito.when(categoryRepository.findById(15)).thenReturn(Optional.of(deletedCategory));
-        assert categoryService.deleteCategory(15).equals(new StatusWrapper(new StatusDto(0, "No error!"))) : "Category not deleted properly";
+        assert categoryService.deleteCategory(15).equals(new Response(0, "No error!")) : "Category not deleted properly";
     }
 }

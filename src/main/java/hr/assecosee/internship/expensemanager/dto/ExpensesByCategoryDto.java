@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ExpensesByCategoryDto implements Dto{
+public class ExpensesByCategoryDto {
 
     private StatusDto status;
     private CategoryDto category;

@@ -3,11 +3,10 @@ package hr.assecosee.internship.expensemanager.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 @Data
-public class ExpenseInfoDto implements Dto{
+public class ExpenseInfoDto {
     private Integer userId;
     private Integer categoryId;
     private String description;

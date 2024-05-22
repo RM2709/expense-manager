@@ -5,7 +5,7 @@ import hr.assecosee.internship.expensemanager.dto.CategoryDto;
 import hr.assecosee.internship.expensemanager.dto.StatusDto;
 import org.junit.jupiter.api.Test;
 
-public class ConvertCategoryDtoTest {
+public class CategoryMapperTest {
 
     @Test
     public void testConvertCategory(){
@@ -18,7 +18,7 @@ public class ConvertCategoryDtoTest {
         desiredResult.setCategoryId(15);
         desiredResult.setName("Test");
         desiredResult.setDescription("Test");
-        CategoryDto result = ConvertCategoryDto.getCategoryDto(testCategory);
+        CategoryDto result = CategoryMapper.getCategoryDto(testCategory);
         assert result.equals(desiredResult) : "Category to CategoryDto conversion unsuccessful";
     }
 }

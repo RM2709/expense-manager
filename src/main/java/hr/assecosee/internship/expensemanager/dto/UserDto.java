@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserDto implements Dto{
+public class UserDto {
 
     private StatusDto status;
     private Integer userId;

@@ -3,7 +3,8 @@ package hr.assecosee.internship.expensemanager.core;
 import hr.assecosee.internship.expensemanager.database.entity.User;
 import hr.assecosee.internship.expensemanager.database.repository.UserRepository;
 import hr.assecosee.internship.expensemanager.dto.*;
-import hr.assecosee.internship.expensemanager.util.ConvertUserDto;
+import hr.assecosee.internship.expensemanager.util.UserMapper;
+import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,12 +28,12 @@ public class UserService {
      * @param userId ID of the user to be retrieved.
      * @return UserDto object containing a Status code, a message describing the outcome of the operation, and basic information of the retrieved user (id, full name, first name, last name, email).
      */
-    public Dto getUser(Integer userId){
+    public UserDto getUser(Integer userId) throws ExpenseManagerException {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isPresent()){
-            return ConvertUserDto.getUserDto(userOptional.get());
+            return UserMapper.getUserDto(userOptional.get());
         } else{
-            return new StatusWrapper(new StatusDto(1, "User with id="+userId+" not found!"));
+            throw new ExpenseManagerException(1, "User with id="+userId+" not found!");
         }
     }
 
@@ -42,7 +43,7 @@ public class UserService {
      * @param userInfo JSON object which contains the first name, last name, and email of the user to be created.
      * @return Status code, a message describing the outcome of the operation, and basic information of the created user (id, full name, first name, last name, email).
      */
-    public Dto createUser(UserInfoDto userInfo) {
+    public UserDto createUser(UserInfoDto userInfo) {
         User newUser = new User();
         if(userInfo.getFirstName()==null){
             userInfo.setFirstName("");
@@ -54,7 +55,7 @@ public class UserService {
         newUser.setLastName(userInfo.getLastName());
         newUser.setEmail(userInfo.getEmail());
         newUser = userRepository.save(newUser);
-        return ConvertUserDto.getUserDto(newUser);
+        return UserMapper.getUserDto(newUser);
     }
 
     /**
@@ -64,7 +65,7 @@ public class UserService {
      * @param userInfo JSON object which contains the first name, last name, and email of the user to be updated.
      * @return Status code, a message describing the outcome of the operation, and basic information of the updated user (id, full name, first name, last name, email).
      */
-    public Dto updateUser(Integer userId, UserInfoDto userInfo) {
+    public UserDto updateUser(Integer userId, UserInfoDto userInfo) throws ExpenseManagerException {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isPresent()){
             User updatedUser = userOptional.get();
@@ -72,9 +73,9 @@ public class UserService {
             updatedUser.setLastName(userInfo.getLastName());
             updatedUser.setEmail(userInfo.getEmail());
             userRepository.save(updatedUser);
-            return ConvertUserDto.getUserDto(updatedUser);
+            return UserMapper.getUserDto(updatedUser);
         } else {
-            return new StatusWrapper(new StatusDto(1, "User with id="+userId+" does not exist!"));
+            throw new ExpenseManagerException(1, "User with id="+userId+" does not exist!");
         }
     }
 
@@ -84,12 +85,12 @@ public class UserService {
      * @param userId ID of the user to be deleted.
      * @return Status code and a message describing the outcome of the operation.
      */
-    public Dto deleteUser(Integer userId) {
+    public Response deleteUser(Integer userId) throws ExpenseManagerException {
         if(userRepository.findById(userId).isPresent()){
             userRepository.deleteById(userId);
-            return new StatusWrapper(new StatusDto(0, "No error!"));
+            return new Response(0, "No error!");
         } else{
-            return new StatusWrapper(new StatusDto(1, "User with id="+userId+" does not exist!"));
+            throw new ExpenseManagerException(1, "User with id="+userId+" does not exist!");
         }
     }
 

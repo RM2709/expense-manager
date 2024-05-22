@@ -5,7 +5,7 @@ import hr.assecosee.internship.expensemanager.dto.StatusDto;
 import hr.assecosee.internship.expensemanager.dto.UserDto;
 import org.junit.jupiter.api.Test;
 
-public class ConvertUserDtoTest {
+public class UserMapperTest {
 
     @Test
     public void testConvertUser(){
@@ -21,7 +21,7 @@ public class ConvertUserDtoTest {
         desiredResult.setLastName("Test");
         desiredResult.setFullName("Test Test");
         desiredResult.setEmail("Test");
-        UserDto result = ConvertUserDto.getUserDto(testUser);
+        UserDto result = UserMapper.getUserDto(testUser);
         assert result.equals(desiredResult) : "User to UserDto conversion unsuccessful";
     }
 }

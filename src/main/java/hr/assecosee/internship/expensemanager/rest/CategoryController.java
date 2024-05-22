@@ -1,8 +1,10 @@
 package hr.assecosee.internship.expensemanager.rest;
 
 import hr.assecosee.internship.expensemanager.core.CategoryService;
+import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
+import hr.assecosee.internship.expensemanager.dto.CategoryDto;
 import hr.assecosee.internship.expensemanager.dto.CategoryInfoDto;
-import hr.assecosee.internship.expensemanager.dto.Dto;
+import hr.assecosee.internship.expensemanager.dto.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -37,7 +39,7 @@ public class CategoryController {
     @Operation(summary = "Retrieve a category.",
             description = "Retrieves an existing category from the database. Response contains a status code, a message describing the outcome of the operation " +
                     "and the retrieved category's data (id, name, description).")
-    public ResponseEntity<Dto> getCategory(@Parameter(description = "ID of the category to be retrieved", required = true) @PathVariable("categoryId") Integer categoryId) {
+    public ResponseEntity<CategoryDto> getCategory(@Parameter(description = "ID of the category to be retrieved", required = true) @PathVariable("categoryId") Integer categoryId) throws ExpenseManagerException {
         return ResponseEntity.ok(categoryService.getCategory(categoryId));
     }
 
@@ -51,7 +53,7 @@ public class CategoryController {
     @Operation(summary = "Create a new category.",
             description = "Creates a new category and inserts it into the database. Response contains a status code, " +
                     "a message describing the outcome of the operation and the newly created category's data (id, name, description).")
-    public ResponseEntity<Dto> createCategory(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
+    public ResponseEntity<CategoryDto> createCategory(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
             description = "Name and description of the category to be created.", content = @Content(schema =@Schema(implementation = CategoryInfoDto.class)))
                                                   @RequestBody CategoryInfoDto categoryInfo){
         return ResponseEntity.ok(categoryService.createCategory(categoryInfo));
@@ -67,10 +69,10 @@ public class CategoryController {
     @PutMapping(value = "/{categoryId}")
     @Operation(summary = "Update an existing category.", description = "Updates an existing category in the database. Response contains a status code, " +
             "a message describing the outcome of the operation and the updated category's data (id, name, description).")
-    public ResponseEntity<Dto> updateCategory(@Parameter(description = "ID of the category to be updated", required = true)
+    public ResponseEntity<CategoryDto> updateCategory(@Parameter(description = "ID of the category to be updated", required = true)
                                                   @PathVariable("categoryId") Integer categoryId, @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
             description = "Name and description of the category to be updated.", content = @Content(schema =@Schema(implementation = CategoryInfoDto.class)))
-    @RequestBody CategoryInfoDto categoryInfo){
+    @RequestBody CategoryInfoDto categoryInfo) throws ExpenseManagerException {
         return ResponseEntity.ok(categoryService.updateCategory(categoryId, categoryInfo));
     }
 
@@ -83,7 +85,7 @@ public class CategoryController {
     @DeleteMapping(value = "/{categoryId}")
     @Operation(summary = "Delete an existing category.", description = "Deletes an existing category from the database. Response contains a status code " +
             "and message describing the outcome of the operation.")
-    public ResponseEntity<Dto> deleteCategory(@Parameter(description = "ID of the category to be deleted", required = true) @PathVariable("categoryId") Integer categoryId){
+    public ResponseEntity<Response> deleteCategory(@Parameter(description = "ID of the category to be deleted", required = true) @PathVariable("categoryId") Integer categoryId) throws ExpenseManagerException {
         return ResponseEntity.ok((categoryService.deleteCategory(categoryId)));
     }
 

@@ -2,11 +2,10 @@ package hr.assecosee.internship.expensemanager.core;
 
 import hr.assecosee.internship.expensemanager.database.entity.User;
 import hr.assecosee.internship.expensemanager.database.repository.UserRepository;
-import hr.assecosee.internship.expensemanager.dto.StatusDto;
-import hr.assecosee.internship.expensemanager.dto.StatusWrapper;
-import hr.assecosee.internship.expensemanager.dto.UserDto;
+import hr.assecosee.internship.expensemanager.dto.Response;
 import hr.assecosee.internship.expensemanager.dto.UserInfoDto;
-import hr.assecosee.internship.expensemanager.util.ConvertUserDto;
+import hr.assecosee.internship.expensemanager.util.UserMapper;
+import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +14,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -26,20 +27,19 @@ public class UserServiceTest {
     UserService userService;
 
     @Test
-    public void getUser_UserIdIs15_UserRetrieved(){
+    public void getUser_UserIdIs15_UserRetrieved() throws ExpenseManagerException {
         Optional<User> testUser = Optional.of(new User());
         testUser.get().setUserId(15);
         testUser.get().setFirstName("Test");
         testUser.get().setLastName("Test");
         testUser.get().setEmail("Test");
         Mockito.when(userRepository.findById(15)).thenReturn(testUser);
-        assert userService.getUser(15).equals(ConvertUserDto.getUserDto(testUser.get())) : "Unable to retrieve user with ID 15";
+        assert userService.getUser(15).equals(UserMapper.getUserDto(testUser.get())) : "Unable to retrieve user with ID 15";
     }
 
     @Test
     public void getUser_UserIdIs12_UserNotRetrieved(){
-        StatusWrapper desiredResult = new StatusWrapper(new StatusDto(1, "User with id=12 not found!"));
-        assert userService.getUser(12).equals(desiredResult) : "User with ID 12 exists";
+        assertThrows(ExpenseManagerException.class, () -> userService.getUser(12), "User retrieved when wrong ID was given");
     }
 
     @Test
@@ -58,7 +58,7 @@ public class UserServiceTest {
         createdUser.setLastName("Test");
         createdUser.setEmail("Test");
         Mockito.when(userRepository.save(newUser)).thenReturn(createdUser);
-        assert userService.createUser(userInfo).equals(ConvertUserDto.getUserDto(createdUser)) : "User not created successfully";
+        assert userService.createUser(userInfo).equals(UserMapper.getUserDto(createdUser)) : "User not created successfully";
     }
 
     @Test
@@ -67,21 +67,16 @@ public class UserServiceTest {
         userInfo.setFirstName("Test");
         userInfo.setLastName("Test");
         userInfo.setEmail("Test");
-        User updatedUser = new User();
-        updatedUser.setUserId(15);
-        updatedUser.setFirstName("Test");
-        updatedUser.setLastName("Test");
-        updatedUser.setEmail("Test");
         Mockito.when(userRepository.findById(15)).thenReturn(Optional.empty());
-        assert !userService.updateUser(15, userInfo).equals(ConvertUserDto.getUserDto(updatedUser)) : "User updated successfully when wrong info was provided";
+        assertThrows(ExpenseManagerException.class, () -> userService.updateUser(15, userInfo), "User updated successfully when wrong info was provided");
     }
 
     @Test
-    public void deleteUser_UserIdProvided_UserDeleted(){
+    public void deleteUser_UserIdProvided_UserDeleted() throws ExpenseManagerException {
         User deletedUser = new User();
         deletedUser.setUserId(15);
         Mockito.when(userRepository.findById(15)).thenReturn(Optional.of(deletedUser));
-        assert userService.deleteUser(15).equals(new StatusWrapper(new StatusDto(0, "No error!"))) : "User not deleted properly";
+        assert userService.deleteUser(15).equals(new Response(0, "No error!")) : "User not deleted properly";
     }
 
 }

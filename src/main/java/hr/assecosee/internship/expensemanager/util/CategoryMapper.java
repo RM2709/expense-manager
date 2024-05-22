@@ -7,7 +7,7 @@ import hr.assecosee.internship.expensemanager.dto.StatusDto;
 /**
  * Helper class for converting a Category object into a suitable CategoryDto object.
  */
-public class ConvertCategoryDto {
+public class CategoryMapper {
 
     /**
      * Converts a Category object into a CategoryDto object.

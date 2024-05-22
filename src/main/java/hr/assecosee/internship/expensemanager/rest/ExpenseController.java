@@ -1,6 +1,7 @@
 package hr.assecosee.internship.expensemanager.rest;
 
 import hr.assecosee.internship.expensemanager.core.ExpenseService;
+import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import hr.assecosee.internship.expensemanager.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,8 +39,8 @@ public class ExpenseController {
             summary = "Retrieve an expense.",
             description = "Retrieves an existing expense from the database. Response contains a status code, a message describing the outcome " +
                     "of the operation and the retrieved expense's data (id, user name, category name, description, amount, time).")
-    public ResponseEntity<Dto> getExpense(@Parameter(description = "ID of the category to be retrieved", required = true)
-                                              @PathVariable("expenseId") Integer expenseId) {
+    public ResponseEntity<ExpenseDto> getExpense(@Parameter(description = "ID of the category to be retrieved", required = true)
+                                              @PathVariable("expenseId") Integer expenseId) throws ExpenseManagerException {
         return ResponseEntity.ok(expenseService.getExpense(expenseId));
     }
 
@@ -53,9 +54,9 @@ public class ExpenseController {
     @Operation(summary = "Create a new expense.",
             description = "Creates a new expense and inserts it into the database. Response contains a status code, a message describing " +
             "the outcome of the operation and the newly created expense's data (id, user name, category name, description, amount, time).")
-    public ResponseEntity<Dto> createExpense(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "User id, category id, description, amount, and time of the expense to be created.",
+    public ResponseEntity<ExpenseDto> createExpense(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "User id, category id, description, amount, and time of the expense to be created.",
             content = @Content(schema =@Schema(implementation = ExpenseInfoDto.class)))
-                                                 @RequestBody ExpenseInfoDto expenseInfo){
+                                                 @RequestBody ExpenseInfoDto expenseInfo) throws ExpenseManagerException {
         return ResponseEntity.ok(expenseService.createExpense(expenseInfo));
     }
 
@@ -70,10 +71,10 @@ public class ExpenseController {
     @Operation(summary = "Update an existing expense.",
             description = "Updates an existing expense in the database. Response contains a status code, a message describing " +
                     "the outcome of the operation and the updated expense's data (id, user name, category name, description, amount, time).")
-    public ResponseEntity<Dto> updateExpense(@Parameter(description = "ID of the expense to be updated", required = true)
+    public ResponseEntity<ExpenseDto> updateExpense(@Parameter(description = "ID of the expense to be updated", required = true)
                                                  @PathVariable("expenseId") Integer expenseId, @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
             description = "User id, category id, description, amount, and time of the expense to be updated.",
-            content = @Content(schema =@Schema(implementation = ExpenseInfoDto.class))) @RequestBody ExpenseInfoDto expenseInfo){
+            content = @Content(schema =@Schema(implementation = ExpenseInfoDto.class))) @RequestBody ExpenseInfoDto expenseInfo) throws ExpenseManagerException {
         return ResponseEntity.ok(expenseService.updateExpense(expenseId, expenseInfo));
     }
 
@@ -86,8 +87,8 @@ public class ExpenseController {
     @DeleteMapping(value = "/{expenseId}")
     @Operation(summary = "Delete an existing expense.",
             description = "Deletes an existing expense from the database. Response contains a status code and message describing the outcome of the operation.")
-    public ResponseEntity<Dto> deleteExpense(@Parameter(description = "ID of the category to be deleted", required = true)
-                                                 @PathVariable("expenseId") Integer expenseId){
+    public ResponseEntity<Response> deleteExpense(@Parameter(description = "ID of the category to be deleted", required = true)
+                                                 @PathVariable("expenseId") Integer expenseId) throws ExpenseManagerException {
         return ResponseEntity.ok((expenseService.deleteExpense(expenseId)));
     }
 
@@ -102,8 +103,8 @@ public class ExpenseController {
             summary = "Retrieve all expenses from a user.",
             description = "Retrieves all the expenses incurred by a user. Response contains a status code, a message describing the outcome of the operation, " +
                     "information on the selected user (id, name, email), and information on all the expenses incurred by said user (category name, description, amount, time).")
-    public ResponseEntity<Dto> getExpensesByUser(@Parameter(description = "ID of the user whose expenses to retrieve", required = true)
-                                                     @PathVariable("userId") Integer userId){
+    public ResponseEntity<ExpensesByUserDto> getExpensesByUser(@Parameter(description = "ID of the user whose expenses to retrieve", required = true)
+                                                     @PathVariable("userId") Integer userId) throws ExpenseManagerException {
         return ResponseEntity.ok(expenseService.getExpensesByUser(userId));
     }
 
@@ -118,8 +119,8 @@ public class ExpenseController {
             summary = "Retrieve all expenses from a category.",
             description = "Retrieves all the expenses belonging to a category. Response contains a status code, a message describing the outcome of the operation, " +
                     "information on the selected category (id, name, description), and information on all the expenses belonging to said category (id, user name, description, amount, time).")
-    public ResponseEntity<Dto> getExpensesByCategory(@Parameter(description = "ID of the category whose expenses to retrieve", required = true)
-                                                         @PathVariable("categoryId") Integer categoryId){
+    public ResponseEntity<ExpensesByCategoryDto> getExpensesByCategory(@Parameter(description = "ID of the category whose expenses to retrieve", required = true)
+                                                         @PathVariable("categoryId") Integer categoryId) throws ExpenseManagerException {
         return ResponseEntity.ok(expenseService.getExpensesByCategory(categoryId));
     }
 
@@ -133,7 +134,7 @@ public class ExpenseController {
     @Operation(summary = "Retrieve all expenses made in a specific time frame.", description = "Retrieves all the expenses made in a specific time frame, " +
             "aka. between two moments in time. Response contains a status code, a message describing the outcome of the operation, and information on all the " +
             "expenses made in the selected timeframe (id, user name, category name, description, amount, time).")
-    public ResponseEntity<Dto> getExpensesByTimeframe(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
+    public ResponseEntity<ExpensesByCategoryDto> getExpensesByTimeframe(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
             description = "Two times in 'yyyy-MM-dd hh:mm:ss' format (from and to) in between which the expenses were made.",
             content = @Content(schema =@Schema(implementation = TimeframeDto.class)))
                                                           @RequestBody TimeframeDto timeframeDto){
