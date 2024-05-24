@@ -3,11 +3,13 @@ package hr.assecosee.internship.expensemanager.rest;
 import hr.assecosee.internship.expensemanager.dto.Response;
 import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
 @RestControllerAdvice
+@ControllerAdvice
 public class ControllerAdvisor {
 
     @ExceptionHandler(value = Exception.class)
