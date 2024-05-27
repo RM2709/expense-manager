@@ -47,7 +47,7 @@ public class AuthenticationController {
             description = "Client id and client secret of the client attempting to create a JWT token.",
             content = @Content(schema =@Schema(implementation = ClientDto.class))) @RequestBody ClientDto clientInfo) throws AuthenticationException, KeyStoreException, UnrecoverableKeyException, CertificateException, IOException, NoSuchAlgorithmException {
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setBearerAuth(authenticationService.authenticate(clientInfo));
+        responseHeaders.set("Authorization", authenticationService.authenticate(clientInfo).trim());
         return new ResponseEntity<>(new StatusDto(0, "No error!"), responseHeaders, HttpStatusCode.valueOf(200));
     }
 

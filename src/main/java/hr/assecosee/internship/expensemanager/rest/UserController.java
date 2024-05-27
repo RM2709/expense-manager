@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.AuthenticationException;
+
 /**
  * REST mapping concerning users.
  */
@@ -55,7 +57,7 @@ public class UserController {
                     "and the newly created user's data (id, name, email).")
     public ResponseEntity<UserDto> createUser(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
             description = "First name, last name, and email of the user to be created.",
-            content = @Content(schema =@Schema(implementation = UserInfoDto.class))) @RequestBody UserInfoDto userInfo){
+            content = @Content(schema =@Schema(implementation = UserInfoDto.class))) @RequestBody UserInfoDto userInfo) throws ExpenseManagerException {
         return ResponseEntity.ok(userService.createUser(userInfo));
     }
 
@@ -73,7 +75,7 @@ public class UserController {
     public ResponseEntity<UserDto> updateUser(@Parameter(description = "ID of the user to be updated", required = true)
                                               @PathVariable("userId") Integer userId,@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
             description = "First name, last name, and email of the user to be updated.",
-            content = @Content(schema =@Schema(implementation = UserInfoDto.class))) @RequestBody UserInfoDto userInfo) throws ExpenseManagerException {
+            content = @Content(schema =@Schema(implementation = UserInfoDto.class))) @RequestBody UserInfoDto userInfo) throws ExpenseManagerException, AuthenticationException {
         return ResponseEntity.ok(userService.updateUser(userId, userInfo));
     }
 

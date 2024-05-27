@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.naming.AuthenticationException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,7 +44,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void createUser_UserInfoProvided_UserCreated(){
+    public void createUser_UserInfoProvided_UserCreated() throws ExpenseManagerException {
         UserInfoDto userInfo = new UserInfoDto();
         userInfo.setFirstName("Test");
         userInfo.setLastName("Test");

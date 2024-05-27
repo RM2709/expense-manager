@@ -1,5 +1,6 @@
 package hr.assecosee.internship.expensemanager.core;
 
+import hr.assecosee.internship.expensemanager.ExpenseManagerApplication;
 import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import hr.assecosee.internship.expensemanager.database.entity.Category;
 import hr.assecosee.internship.expensemanager.database.entity.Expense;
@@ -9,6 +10,8 @@ import hr.assecosee.internship.expensemanager.database.repository.ExpenseReposit
 import hr.assecosee.internship.expensemanager.database.repository.UserRepository;
 import hr.assecosee.internship.expensemanager.dto.*;
 import hr.assecosee.internship.expensemanager.util.ExpenseMapper;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,8 @@ public class ExpenseService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ExpenseRepository expenseRepository;
+
+    private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
 
     @Autowired
     public ExpenseService(CategoryRepository categoryRepository, UserRepository userRepository, ExpenseRepository expenseRepository){
@@ -39,16 +44,18 @@ public class ExpenseService {
     public ExpenseDto getExpense(Integer expenseId) throws ExpenseManagerException {
         Optional<Expense> expenseOptional = expenseRepository.findById(expenseId);
         if(expenseOptional.isPresent()){
-                ExpenseDto expenseDto = new ExpenseDto();
-                expenseDto.setStatus(new StatusDto(0, "No error!"));
-                expenseDto.setExpenseId(expenseOptional.get().getExpenseId());
-                expenseDto.setUserFullName(expenseOptional.get().getUsersByUserId().getFirstName() + " " + expenseOptional.get().getUsersByUserId().getLastName());
-                expenseDto.setCategoryName(expenseOptional.get().getCategoryByCategoryId().getName());
-                expenseDto.setDescription(expenseOptional.get().getDescription());
-                expenseDto.setAmount(expenseOptional.get().getAmount());
-                expenseDto.setTime(expenseOptional.get().getTime());
-                return expenseDto;
+            ExpenseDto expenseDto = new ExpenseDto();
+            expenseDto.setStatus(new StatusDto(0, "No error!"));
+            expenseDto.setExpenseId(expenseOptional.get().getExpenseId());
+            expenseDto.setUserFullName(expenseOptional.get().getUsersByUserId().getFirstName() + " " + expenseOptional.get().getUsersByUserId().getLastName());
+            expenseDto.setCategoryName(expenseOptional.get().getCategoryByCategoryId().getName());
+            expenseDto.setDescription(expenseOptional.get().getDescription());
+            expenseDto.setAmount(expenseOptional.get().getAmount());
+            expenseDto.setTime(expenseOptional.get().getTime());
+            logger.info("Method getExpense called with id " + expenseId + ". Expense retrieved.");
+            return expenseDto;
         } else{
+            logger.error("Method getExpense called with id " + expenseId + ". Expense not found, throwing exception.");
             throw new ExpenseManagerException(1, "Expense with id="+expenseId+" not found!");
         }
     }
@@ -62,10 +69,12 @@ public class ExpenseService {
     public ExpenseDto createExpense(ExpenseInfoDto expenseInfo) throws ExpenseManagerException {
         Optional<User> userOptional = userRepository.findById(expenseInfo.getUserId());
         if(userOptional.isEmpty()){
+            logger.error("Method createExpense called with the user id " + expenseInfo.getUserId() + ". User not found. Throwing error.");
             throw new ExpenseManagerException(1, "User with id="+expenseInfo.getUserId()+" not found!");
         }
         Optional<Category> categoryOptional = categoryRepository.findById(expenseInfo.getCategoryId());
         if(categoryOptional.isEmpty()){
+            logger.error("Method createExpense called with the category id " + expenseInfo.getCategoryId() + ". Category not found. Throwing error.");
             throw new ExpenseManagerException(1, "Category with id="+expenseInfo.getCategoryId()+" not found!");
         }
         Expense newExpense = new Expense();
@@ -77,6 +86,7 @@ public class ExpenseService {
         newExpense.setAmount(expenseInfo.getAmount());
         newExpense.setTime(expenseInfo.getTime());
         newExpense = expenseRepository.save(newExpense);
+        logger.info("Method createExpense called. Expense created with id " + newExpense.getExpenseId());
         return ExpenseMapper.getExpenseDto(newExpense, newExpense.getUsersByUserId(), newExpense.getCategoryByCategoryId());
     }
 
@@ -96,8 +106,10 @@ public class ExpenseService {
             updatedExpense.get().setAmount(expenseInfo.getAmount());
             updatedExpense.get().setTime(expenseInfo.getTime());
             expenseRepository.save(updatedExpense.get());
+            logger.info("Method updateExpense called with id " + expenseId + ". Expense updated.");
             return ExpenseMapper.getExpenseDto(updatedExpense.get(), updatedExpense.get().getUsersByUserId(), updatedExpense.get().getCategoryByCategoryId());
         } else{
+            logger.error("Method updateExpense called with id " + expenseId + ". Expense not found, throwing exception.");
             throw new ExpenseManagerException(1, "Expense with id="+expenseId+" not found!");
         }
 
@@ -112,8 +124,10 @@ public class ExpenseService {
     public Response deleteExpense(Integer expenseId) throws ExpenseManagerException {
         if(expenseRepository.findById(expenseId).isPresent()){
             expenseRepository.deleteById(expenseId);
+            logger.info("Method deleteExpense called with id " + expenseId + ". Expense deleted.");
             return new Response(0, "No error!");
         } else{
+            logger.error("Method deleteExpense called with id " + expenseId + ". Expense not found, throwing exception.");
             throw new ExpenseManagerException(1, "Expense with id="+expenseId+" does not exist!");
         }
     }
@@ -127,6 +141,7 @@ public class ExpenseService {
     public ExpensesByUserDto getExpensesByUser(Integer userId) throws ExpenseManagerException {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isEmpty()){
+            logger.error("Method getExpensesByUser called with the user id " + userId + ". User not found. Throwing error.");
             throw new ExpenseManagerException(1, "User with id="+userId+" does not exist!");
         }
         ExpensesByUserDto expensesByUserDto = new ExpensesByUserDto();
@@ -140,6 +155,7 @@ public class ExpenseService {
         for (Expense expense : expenseRepository.findAllByUserId(userId)) {
             expensesByUserDto.getExpenses().add(new ExpenseDto(expense.getCategoryByCategoryId().getName(), expense.getDescription(), expense.getAmount(), expense.getTime()));
         }
+        logger.info("Method getExpensesByUser called with user id "+userId+". Retrieved all expenses made by user.");
         return expensesByUserDto;
     }
 
@@ -152,6 +168,7 @@ public class ExpenseService {
     public ExpensesByCategoryDto getExpensesByCategory(Integer categoryId) throws ExpenseManagerException {
         Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
         if(categoryOptional.isEmpty()){
+            logger.error("Method getExpensesByCategory called with the category id " + categoryId + ". Category not found. Throwing error.");
             throw new ExpenseManagerException(1, "Category with id="+categoryId+" does not exist!");
         }
         ExpensesByCategoryDto expensesByCategoryDto = new ExpensesByCategoryDto();
@@ -165,6 +182,7 @@ public class ExpenseService {
         for (Expense expense : expenseRepository.findAllByCategoryId(categoryId)) {
             expensesByCategoryDto.getExpenses().add(new ExpenseDto(expense.getExpenseId(), expense.getUsersByUserId().getFirstName() + " " + expense.getUsersByUserId().getLastName(), expense.getDescription(), expense.getAmount(), expense.getTime()));
         }
+        logger.info("Method getExpensesByCategory called with category id "+categoryId+". Retrieved all expenses made by category.");
         return expensesByCategoryDto;
     }
 
@@ -181,6 +199,7 @@ public class ExpenseService {
         for (Expense expense : expenseRepository.findAllByTimeBetween(timeframeDto.getExpenseFrom(), timeframeDto.getExpenseTo())) {
             expensesByTimeframeDto.getExpenses().add(new ExpenseDto(expense.getExpenseId(), expense.getCategoryByCategoryId().getName(), expense.getUsersByUserId().getFirstName() + " " + expense.getUsersByUserId().getLastName(), expense.getDescription(), expense.getAmount(), expense.getTime()));
         }
+        logger.info("Method getExpensesByTimeframe called. Retrieved all expenses between "+timeframeDto.getExpenseFrom()+" and " + timeframeDto.getExpenseTo());
         return expensesByTimeframeDto;
     }
 }

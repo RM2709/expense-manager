@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.naming.AuthenticationException;
+
 
 @RestControllerAdvice
 @ControllerAdvice
@@ -20,6 +22,11 @@ public class ControllerAdvisor {
     @ExceptionHandler(value = ExpenseManagerException.class)
     public ResponseEntity<Response> expenseManagerException(ExpenseManagerException expenseManagerException){
         return ResponseEntity.ok(expenseManagerException.getResponse());
+    }
+
+    @ExceptionHandler(value = AuthenticationException.class)
+    public ResponseEntity<Response> authenticationException(AuthenticationException authenticationException){
+        return ResponseEntity.status(401).body(new Response(401, "Client cannot be authenticated! Error message: " + authenticationException.getMessage()));
     }
 
 }

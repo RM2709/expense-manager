@@ -19,10 +19,10 @@ public class Expense {
     @Column(name = "category_id", nullable = false)
     private Integer categoryId;
     @Basic
-    @Column(name = "description", nullable = true, length = -1)
+    @Column(name = "description")
     private String description;
     @Basic
-    @Column(name = "amount", nullable = false, precision = 0)
+    @Column(name = "amount", nullable = false)
     private Double amount;
     @Basic
     @Temporal(TemporalType.TIMESTAMP)

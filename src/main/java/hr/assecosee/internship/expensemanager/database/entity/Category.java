@@ -12,10 +12,10 @@ public class Category {
     @Column(name = "category_id", nullable = false)
     private Integer categoryId;
     @Basic
-    @Column(name = "name", nullable = false, length = -1)
+    @Column(name = "name", nullable = false)
     private String name;
     @Basic
-    @Column(name = "description", nullable = true, length = -1)
+    @Column(name = "description")
     private String description;
     @OneToMany(mappedBy = "categoryByCategoryId")
     private Collection<Expense> expensesByCategoryId;

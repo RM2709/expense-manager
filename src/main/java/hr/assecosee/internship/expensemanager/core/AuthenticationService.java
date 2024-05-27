@@ -1,7 +1,10 @@
 package hr.assecosee.internship.expensemanager.core;
 
+import hr.assecosee.internship.expensemanager.ExpenseManagerApplication;
 import hr.assecosee.internship.expensemanager.dto.ClientDto;
 import io.jsonwebtoken.Jwts;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
@@ -31,32 +34,32 @@ public class AuthenticationService {
 
     KeyStore keystore;
 
-    public String authorize(String authorizationHeader) {
-        try {
-            Jwts.parserBuilder().setSigningKey(getPublicRsaKey()).build().parse(authorizationHeader.split(" ")[1]);
-            return "true";
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+    private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
+
+    public boolean authorize(String authorizationHeader) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
+        Jwts.parserBuilder().setSigningKey(getPublicRsaKey()).build().parse(authorizationHeader.split(" ")[1].trim());
+        logger.info("Method authorize called for the following JWT token: " + authorizationHeader.split(" ")[1].trim() + ". User authorized.");
+        return true;
 
     }
 
     public String authenticate(ClientDto clientDto) throws AuthenticationException, KeyStoreException, UnrecoverableKeyException, CertificateException, IOException, NoSuchAlgorithmException {
         if(retrieveClientsInfo().contains(clientDto)){
+            logger.info("Method authenticate called. User authenticated successfully. JWT token generated.");
             return generateJwtToken(clientDto);
         } else{
+            logger.info("Method authenticate called. User not authenticated successfully. Error thrown.");
             throw new AuthenticationException("Client id and secret combination not present in configuration file!");
         }
     }
 
     private String generateJwtToken(ClientDto clientDto) throws KeyStoreException, UnrecoverableKeyException, CertificateException, IOException, NoSuchAlgorithmException {
-        String jwtToken = Jwts.builder()
+        return Jwts.builder()
                 .setSubject(clientDto.getClientId().toString())
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(Instant.now().plus(3, ChronoUnit.MINUTES)))
                 .signWith(getPrivateRsaKey())
                 .compact();
-        return jwtToken;
     }
 
     private List<ClientDto> retrieveClientsInfo(){
@@ -71,14 +74,12 @@ public class AuthenticationService {
     private PrivateKey getPrivateRsaKey() throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException {
         keystore = KeyStore.getInstance("PKCS12");
         keystore.load(this.getClass().getClassLoader().getResourceAsStream(p12file), keystorePassword.toCharArray());
-        PrivateKey key = (PrivateKey)keystore.getKey(keystoreAlias, keystorePassword.toCharArray());
-        return key;
+        return (PrivateKey)keystore.getKey(keystoreAlias, keystorePassword.toCharArray());
     }
 
-    private PublicKey getPublicRsaKey() throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    private PublicKey getPublicRsaKey() throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException {
         keystore = KeyStore.getInstance("PKCS12");
         keystore.load(this.getClass().getClassLoader().getResourceAsStream(p12file), keystorePassword.toCharArray());
-        PublicKey key = keystore.getCertificate(keystoreAlias).getPublicKey();
-        return key;
+        return keystore.getCertificate(keystoreAlias).getPublicKey();
     }
 }

@@ -1,10 +1,13 @@
 package hr.assecosee.internship.expensemanager.core;
 
+import hr.assecosee.internship.expensemanager.ExpenseManagerApplication;
 import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import hr.assecosee.internship.expensemanager.database.entity.Category;
 import hr.assecosee.internship.expensemanager.database.repository.CategoryRepository;
 import hr.assecosee.internship.expensemanager.dto.*;
 import hr.assecosee.internship.expensemanager.util.CategoryMapper;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,8 @@ import java.util.Optional;
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+
+    private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
 
     @Autowired
     public CategoryService(CategoryRepository categoryRepository){
@@ -36,8 +41,10 @@ public class CategoryService {
             categoryDto.setCategoryId(categoryOptional.get().getCategoryId());
             categoryDto.setName(categoryOptional.get().getName());
             categoryDto.setDescription(categoryOptional.get().getDescription());
+            logger.info("Method getCategory called with id " + categoryId + ". Category retrieved.");
             return categoryDto;
         } else{
+            logger.error("Method getCategory called with id " + categoryId + ". Category not found, throwing exception.");
             throw new ExpenseManagerException(1, "Category with id="+categoryId+" not found!");
         }
     }
@@ -56,6 +63,7 @@ public class CategoryService {
         newCategory.setName(categoryInfo.getName());
         newCategory.setDescription(categoryInfo.getDescription());
         newCategory = categoryRepository.save(newCategory);
+        logger.info("Method createCategory called. Category created with id " + newCategory.getCategoryId());
         return CategoryMapper.getCategoryDto(newCategory);
     }
 
@@ -73,8 +81,10 @@ public class CategoryService {
             updatedCategory.setName(categoryInfo.getName());
             updatedCategory.setDescription(categoryInfo.getDescription());
             categoryRepository.save(updatedCategory);
+            logger.info("Method updateCategory called with id " + categoryId + ". Category updated.");
             return CategoryMapper.getCategoryDto(updatedCategory);
         } else {
+            logger.error("Method updateCategory called with id " + categoryId + ". Category not found, throwing exception.");
             throw new ExpenseManagerException(1, "Category with id="+categoryId+" does not exist!");
         }
     }
@@ -88,8 +98,10 @@ public class CategoryService {
     public Response deleteCategory(Integer categoryId) throws ExpenseManagerException {
         if(categoryRepository.findById(categoryId).isPresent()){
             categoryRepository.deleteById(categoryId);
+            logger.info("Method deleteCategory called with id " + categoryId + ". Category deleted.");
             return new Response(0, "No error!");
         } else{
+            logger.error("Method deleteCategory called with id " + categoryId + ". Category not found, throwing exception.");
             throw new ExpenseManagerException(1, "Category with id="+categoryId+" does not exist!");
         }
     }
