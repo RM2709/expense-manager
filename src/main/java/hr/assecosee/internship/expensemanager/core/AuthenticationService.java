@@ -26,8 +26,8 @@ public class AuthenticationService {
     @Value("${keystorePassword}")
     private String keystorePassword;
 
-    @Value("${keystoreAlias}")
-    private String keystoreAlias;
+    @Value("${keystoreRsaAlias}")
+    private String keystoreRsaAlias;
 
     @Value("${p12file}")
     private String p12file;
@@ -36,24 +36,47 @@ public class AuthenticationService {
 
     private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
 
+    /**
+     *
+     * @param authorizationHeader Authorization header of the incoming request.
+     * @return true if authorized
+     * @throws CertificateException
+     * @throws KeyStoreException
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     */
     public boolean authorize(String authorizationHeader) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
+        logger.info("Method authorize called for the following JWT token: " + authorizationHeader.split(" ")[1].trim());
         Jwts.parserBuilder().setSigningKey(getPublicRsaKey()).build().parse(authorizationHeader.split(" ")[1].trim());
-        logger.info("Method authorize called for the following JWT token: " + authorizationHeader.split(" ")[1].trim() + ". User authorized.");
+        logger.info("User authorized.");
         return true;
 
     }
 
+    /**
+     *
+     * @param clientDto object containing id and secret of the client requesting a JWT token.
+     * @return JWT token if client secret and id correct.
+     * @throws AuthenticationException
+     * @throws KeyStoreException
+     * @throws UnrecoverableKeyException
+     * @throws CertificateException
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     */
     public String authenticate(ClientDto clientDto) throws AuthenticationException, KeyStoreException, UnrecoverableKeyException, CertificateException, IOException, NoSuchAlgorithmException {
+        logger.info("Method authenticate called.");
         if(retrieveClientsInfo().contains(clientDto)){
-            logger.info("Method authenticate called. User authenticated successfully. JWT token generated.");
+            logger.info("User authenticated successfully. JWT token generated.");
             return generateJwtToken(clientDto);
         } else{
-            logger.info("Method authenticate called. User not authenticated successfully. Error thrown.");
+            logger.info("User not authenticated successfully. Error thrown.");
             throw new AuthenticationException("Client id and secret combination not present in configuration file!");
         }
     }
 
     private String generateJwtToken(ClientDto clientDto) throws KeyStoreException, UnrecoverableKeyException, CertificateException, IOException, NoSuchAlgorithmException {
+        logger.info("Method generateJwtToken called.");
         return Jwts.builder()
                 .setSubject(clientDto.getClientId().toString())
                 .setIssuedAt(Date.from(Instant.now()))
@@ -72,14 +95,16 @@ public class AuthenticationService {
     }
 
     private PrivateKey getPrivateRsaKey() throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        logger.info("Method getPrivateRsaKey called.");
         keystore = KeyStore.getInstance("PKCS12");
         keystore.load(this.getClass().getClassLoader().getResourceAsStream(p12file), keystorePassword.toCharArray());
-        return (PrivateKey)keystore.getKey(keystoreAlias, keystorePassword.toCharArray());
+        return (PrivateKey)keystore.getKey(keystoreRsaAlias, keystorePassword.toCharArray());
     }
 
     private PublicKey getPublicRsaKey() throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException {
+        logger.info("Method getPublicRsaKey called.");
         keystore = KeyStore.getInstance("PKCS12");
         keystore.load(this.getClass().getClassLoader().getResourceAsStream(p12file), keystorePassword.toCharArray());
-        return keystore.getCertificate(keystoreAlias).getPublicKey();
+        return keystore.getCertificate(keystoreRsaAlias).getPublicKey();
     }
 }

@@ -12,6 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+
 /**
  * REST mapping concerning expenses.
  */
@@ -40,7 +50,7 @@ public class ExpenseController {
             description = "Retrieves an existing expense from the database. Response contains a status code, a message describing the outcome " +
                     "of the operation and the retrieved expense's data (id, user name, category name, description, amount, time).")
     public ResponseEntity<ExpenseDto> getExpense(@Parameter(description = "ID of the category to be retrieved", required = true)
-                                              @PathVariable("expenseId") Integer expenseId) throws ExpenseManagerException {
+                                              @PathVariable("expenseId") Integer expenseId) throws ExpenseManagerException, UnrecoverableKeyException, NoSuchPaddingException, IllegalBlockSizeException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, BadPaddingException, InvalidKeyException {
         return ResponseEntity.ok(expenseService.getExpense(expenseId));
     }
 
@@ -56,7 +66,7 @@ public class ExpenseController {
             "the outcome of the operation and the newly created expense's data (id, user name, category name, description, amount, time).")
     public ResponseEntity<ExpenseDto> createExpense(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "User id, category id, description, amount, and time of the expense to be created.",
             content = @Content(schema =@Schema(implementation = ExpenseInfoDto.class)))
-                                                 @RequestBody ExpenseInfoDto expenseInfo) throws ExpenseManagerException {
+                                                 @RequestBody ExpenseInfoDto expenseInfo) throws ExpenseManagerException, UnrecoverableKeyException, IllegalBlockSizeException, NoSuchPaddingException, CertificateException, BadPaddingException, NoSuchAlgorithmException, KeyStoreException, IOException, InvalidKeyException {
         return ResponseEntity.ok(expenseService.createExpense(expenseInfo));
     }
 
@@ -74,7 +84,7 @@ public class ExpenseController {
     public ResponseEntity<ExpenseDto> updateExpense(@Parameter(description = "ID of the expense to be updated", required = true)
                                                  @PathVariable("expenseId") Integer expenseId, @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
             description = "User id, category id, description, amount, and time of the expense to be updated.",
-            content = @Content(schema =@Schema(implementation = ExpenseInfoDto.class))) @RequestBody ExpenseInfoDto expenseInfo) throws ExpenseManagerException {
+            content = @Content(schema =@Schema(implementation = ExpenseInfoDto.class))) @RequestBody ExpenseInfoDto expenseInfo) throws ExpenseManagerException, UnrecoverableKeyException, IllegalBlockSizeException, NoSuchPaddingException, CertificateException, BadPaddingException, NoSuchAlgorithmException, KeyStoreException, IOException, InvalidKeyException {
         return ResponseEntity.ok(expenseService.updateExpense(expenseId, expenseInfo));
     }
 
@@ -104,7 +114,7 @@ public class ExpenseController {
             description = "Retrieves all the expenses incurred by a user. Response contains a status code, a message describing the outcome of the operation, " +
                     "information on the selected user (id, name, email), and information on all the expenses incurred by said user (category name, description, amount, time).")
     public ResponseEntity<ExpensesByUserDto> getExpensesByUser(@Parameter(description = "ID of the user whose expenses to retrieve", required = true)
-                                                     @PathVariable("userId") Integer userId) throws ExpenseManagerException {
+                                                     @PathVariable("userId") Integer userId) throws ExpenseManagerException, UnrecoverableKeyException, NoSuchPaddingException, IllegalBlockSizeException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, BadPaddingException, InvalidKeyException {
         return ResponseEntity.ok(expenseService.getExpensesByUser(userId));
     }
 
@@ -120,7 +130,7 @@ public class ExpenseController {
             description = "Retrieves all the expenses belonging to a category. Response contains a status code, a message describing the outcome of the operation, " +
                     "information on the selected category (id, name, description), and information on all the expenses belonging to said category (id, user name, description, amount, time).")
     public ResponseEntity<ExpensesByCategoryDto> getExpensesByCategory(@Parameter(description = "ID of the category whose expenses to retrieve", required = true)
-                                                         @PathVariable("categoryId") Integer categoryId) throws ExpenseManagerException {
+                                                         @PathVariable("categoryId") Integer categoryId) throws ExpenseManagerException, UnrecoverableKeyException, NoSuchPaddingException, IllegalBlockSizeException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, BadPaddingException, InvalidKeyException {
         return ResponseEntity.ok(expenseService.getExpensesByCategory(categoryId));
     }
 
@@ -137,7 +147,7 @@ public class ExpenseController {
     public ResponseEntity<ExpensesByCategoryDto> getExpensesByTimeframe(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
             description = "Two times in 'yyyy-MM-dd hh:mm:ss' format (from and to) in between which the expenses were made.",
             content = @Content(schema =@Schema(implementation = TimeframeDto.class)))
-                                                          @RequestBody TimeframeDto timeframeDto){
+                                                          @RequestBody TimeframeDto timeframeDto) throws UnrecoverableKeyException, NoSuchPaddingException, IllegalBlockSizeException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, BadPaddingException, InvalidKeyException {
         return ResponseEntity.ok(expenseService.getExpensesByTimeframe(timeframeDto));
     }
 

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StatusService {
-
     private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
 
     /**

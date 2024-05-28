@@ -12,6 +12,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -82,7 +91,7 @@ public class ExpenseServiceTest {
     }
 
     @Test
-    public void getExpensesByTimeframe_ShortTimeframe_ExpenseListEmpty(){
+    public void getExpensesByTimeframe_ShortTimeframe_ExpenseListEmpty() throws UnrecoverableKeyException, NoSuchPaddingException, IllegalBlockSizeException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, BadPaddingException, InvalidKeyException {
         ExpensesByCategoryDto expensesByTimeframeDto = new ExpensesByCategoryDto();
         StatusDto status = new StatusDto(0, "No error!");
         expensesByTimeframeDto.setStatus(status);

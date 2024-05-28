@@ -11,7 +11,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.security.KeyStoreException;
@@ -28,6 +27,7 @@ import java.security.cert.CertificateException;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+
 
     @Autowired
     public AuthenticationController(AuthenticationService authenticationService){
@@ -50,8 +50,5 @@ public class AuthenticationController {
         responseHeaders.set("Authorization", authenticationService.authenticate(clientInfo).trim());
         return new ResponseEntity<>(new StatusDto(0, "No error!"), responseHeaders, HttpStatusCode.valueOf(200));
     }
-
-
-
 }
 

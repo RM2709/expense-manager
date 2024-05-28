@@ -27,7 +27,7 @@ public class StatusController {
     @GetMapping("/status")
     @Operation(summary = "Check application status.",
             description = "Checks if the application is running properly or not. Response will contain the status code '0' and the message 'No error!' if it is running properly.")
-    public ResponseEntity<Response> getStatus() {
+    public ResponseEntity<Response> getStatus(){
         return ResponseEntity.ok(statusService.status());
     }
 

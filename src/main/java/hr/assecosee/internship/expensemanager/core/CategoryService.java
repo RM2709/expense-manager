@@ -34,17 +34,13 @@ public class CategoryService {
      * @return CategoryDto object containing a Status code, a message describing the outcome of the operation, and basic information of the retrieved category (id, name, description).
      */
     public CategoryDto getCategory(Integer categoryId) throws ExpenseManagerException {
+        logger.info("Method getCategory called with id " + categoryId);
         Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
         if(categoryOptional.isPresent()){
-            CategoryDto categoryDto = new CategoryDto();
-            categoryDto.setStatus(new StatusDto(0, "No error!"));
-            categoryDto.setCategoryId(categoryOptional.get().getCategoryId());
-            categoryDto.setName(categoryOptional.get().getName());
-            categoryDto.setDescription(categoryOptional.get().getDescription());
-            logger.info("Method getCategory called with id " + categoryId + ". Category retrieved.");
-            return categoryDto;
+            logger.info("Category retrieved.");
+            return CategoryMapper.getCategoryDto(categoryOptional.get());
         } else{
-            logger.error("Method getCategory called with id " + categoryId + ". Category not found, throwing exception.");
+            logger.error("Category not found, throwing exception.");
             throw new ExpenseManagerException(1, "Category with id="+categoryId+" not found!");
         }
     }
@@ -56,6 +52,7 @@ public class CategoryService {
      * @return Status code, a message describing the outcome of the operation, and basic information of the created category (id, name, description).
      */
     public CategoryDto createCategory(CategoryInfoDto categoryInfo) {
+        logger.info("Method createCategory called.");
         Category newCategory = new Category();
         if(categoryInfo.getName()==null){
             categoryInfo.setName("");
@@ -63,7 +60,7 @@ public class CategoryService {
         newCategory.setName(categoryInfo.getName());
         newCategory.setDescription(categoryInfo.getDescription());
         newCategory = categoryRepository.save(newCategory);
-        logger.info("Method createCategory called. Category created with id " + newCategory.getCategoryId());
+        logger.info("Category created with id " + newCategory.getCategoryId());
         return CategoryMapper.getCategoryDto(newCategory);
     }
 
@@ -75,16 +72,17 @@ public class CategoryService {
      * @return Status code, a message describing the outcome of the operation, and basic information of the updated category (id, name, description).
      */
     public CategoryDto updateCategory(Integer categoryId, CategoryInfoDto categoryInfo) throws ExpenseManagerException {
+        logger.info("Method updateCategory called with id " + categoryId);
         Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
         if(categoryOptional.isPresent()){
             Category updatedCategory = categoryOptional.get();
             updatedCategory.setName(categoryInfo.getName());
             updatedCategory.setDescription(categoryInfo.getDescription());
             categoryRepository.save(updatedCategory);
-            logger.info("Method updateCategory called with id " + categoryId + ". Category updated.");
+            logger.info("Category updated.");
             return CategoryMapper.getCategoryDto(updatedCategory);
         } else {
-            logger.error("Method updateCategory called with id " + categoryId + ". Category not found, throwing exception.");
+            logger.error("Category not found, throwing exception.");
             throw new ExpenseManagerException(1, "Category with id="+categoryId+" does not exist!");
         }
     }
@@ -96,12 +94,13 @@ public class CategoryService {
      * @return Status code and a message describing the outcome of the operation.
      */
     public Response deleteCategory(Integer categoryId) throws ExpenseManagerException {
+        logger.info("Method deleteCategory called with id " + categoryId);
         if(categoryRepository.findById(categoryId).isPresent()){
             categoryRepository.deleteById(categoryId);
-            logger.info("Method deleteCategory called with id " + categoryId + ". Category deleted.");
+            logger.info("Category deleted.");
             return new Response(0, "No error!");
         } else{
-            logger.error("Method deleteCategory called with id " + categoryId + ". Category not found, throwing exception.");
+            logger.error("Category not found, throwing exception.");
             throw new ExpenseManagerException(1, "Category with id="+categoryId+" does not exist!");
         }
     }

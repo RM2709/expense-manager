@@ -19,6 +19,8 @@ public class ControllerAdvisor {
         return ResponseEntity.status(500).body(new Response(500, exception.getMessage()));
     }
 
+
+
     @ExceptionHandler(value = ExpenseManagerException.class)
     public ResponseEntity<Response> expenseManagerException(ExpenseManagerException expenseManagerException){
         return ResponseEntity.ok(expenseManagerException.getResponse());

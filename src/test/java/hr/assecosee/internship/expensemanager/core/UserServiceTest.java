@@ -13,7 +13,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.naming.AuthenticationException;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,7 +37,7 @@ public class UserServiceTest {
     UserService userService;
 
     @Test
-    public void getUser_UserIdIs15_UserRetrieved() throws ExpenseManagerException {
+    public void getUser_UserIdIs15_UserRetrieved() throws ExpenseManagerException, UnrecoverableKeyException, NoSuchPaddingException, IllegalBlockSizeException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, BadPaddingException, InvalidKeyException {
         Optional<User> testUser = Optional.of(new User());
         testUser.get().setUserId(15);
         testUser.get().setFirstName("Test");
@@ -44,7 +53,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void createUser_UserInfoProvided_UserCreated() throws ExpenseManagerException {
+    public void createUser_UserInfoProvided_UserCreated() throws ExpenseManagerException, UnrecoverableKeyException, IllegalBlockSizeException, NoSuchPaddingException, CertificateException, BadPaddingException, NoSuchAlgorithmException, KeyStoreException, IOException, InvalidKeyException {
         UserInfoDto userInfo = new UserInfoDto();
         userInfo.setFirstName("Test");
         userInfo.setLastName("Test");
