@@ -83,6 +83,8 @@ public class UserService {
         newUser.setFirstName(encryptionService.encrypt(userInfo.getFirstName()));
         newUser.setLastName(encryptionService.encrypt(userInfo.getLastName()));
         newUser.setEmail(encryptionService.encrypt(userInfo.getEmail()));
+        newUser.setBudget(userInfo.getBudget());
+        newUser.setBudgetDays(userInfo.getBudgetDays());
         newUser = userRepository.save(newUser);
         logger.info("User created with id " + newUser.getUserId());
         newUser.setFirstName(userInfo.getFirstName());
@@ -117,6 +119,8 @@ public class UserService {
             updatedUser.setFirstName(encryptionService.encrypt(userInfo.getFirstName()));
             updatedUser.setLastName(encryptionService.encrypt(userInfo.getLastName()));
             updatedUser.setEmail(encryptionService.encrypt(userInfo.getEmail()));
+            updatedUser.setBudget(userInfo.getBudget());
+            updatedUser.setBudgetDays(userInfo.getBudgetDays());
             userRepository.save(updatedUser);
             logger.info("User updated.");
             updatedUser.setFirstName(userInfo.getFirstName());

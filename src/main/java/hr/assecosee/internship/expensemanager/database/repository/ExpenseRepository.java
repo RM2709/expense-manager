@@ -14,4 +14,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Integer> {
     List<Expense> findAllByCategoryId(Integer categoryId);
 
     List<Expense> findAllByTimeBetween(Date from, Date to);
+
+    List<Expense> findAllByTimeBetweenAndUserId(Date from, Date to, Integer userId);
 }

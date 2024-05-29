@@ -12,7 +12,7 @@ public class UserMapper {
      * Converts a User object into a UserDto object.
      *
      * @param user User class object which is converted into a JSON object of the appropriate form.
-     * @return UserDto object which is structured correctly (containing user id, full name, first name, last name, and email) and ready to be returned in JSON form.
+     * @return UserDto object which is structured correctly (containing user id, full name, first name, last name, email, budget, and budget days) and ready to be returned in JSON form.
      */
     public static UserDto getUserDto(User user) {
         UserDto userDto = new UserDto();
@@ -22,6 +22,8 @@ public class UserMapper {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setEmail(user.getEmail());
+        userDto.setBudget(user.getBudget());
+        userDto.setBudgetDays(user.getBudgetDays());
         return userDto;
     }
 }

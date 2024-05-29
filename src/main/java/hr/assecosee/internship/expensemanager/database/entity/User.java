@@ -21,6 +21,12 @@ public class User {
     @Basic
     @Column(name = "email")
     private String email;
+    @Basic
+    @Column(name = "budget")
+    private Double budget;
+    @Basic
+    @Column(name = "budget_days")
+    private Integer budgetDays;
     @OneToMany(mappedBy = "usersByUserId")
     private Collection<Expense> expensesByUserId;
 
@@ -54,6 +60,22 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Double getBudget() {
+        return budget;
+    }
+
+    public void setBudget(Double budget) {
+        this.budget = budget;
+    }
+
+    public Integer getBudgetDays() {
+        return budgetDays;
+    }
+
+    public void setBudgetDays(Integer budgetDays) {
+        this.budgetDays = budgetDays;
     }
 
     @Override
