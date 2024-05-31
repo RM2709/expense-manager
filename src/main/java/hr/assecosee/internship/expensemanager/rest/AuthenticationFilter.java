@@ -1,6 +1,5 @@
 package hr.assecosee.internship.expensemanager.rest;
 
-import hr.assecosee.internship.expensemanager.ExpenseManagerApplication;
 import hr.assecosee.internship.expensemanager.core.AuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,7 +22,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthenticationService authenticationService;
 
-    private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
+    private static final Logger classLogger = LogManager.getLogger(AuthenticationFilter.class);
 
     @Autowired
     public AuthenticationFilter(AuthenticationService authenticationService){
@@ -46,7 +45,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
             }
         } catch (Exception e) {
-            logger.error("User authorization failed. Error message: " + e.getMessage());
+            classLogger.error("User authorization failed. Error message: " + e.getMessage());
             handlerExceptionResolver.resolveException(request, response, null, new AuthenticationException(e.getMessage()));
         }
     }

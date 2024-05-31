@@ -1,6 +1,4 @@
 package hr.assecosee.internship.expensemanager.core;
-
-import hr.assecosee.internship.expensemanager.ExpenseManagerApplication;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +9,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.Base64;
@@ -19,7 +18,7 @@ import java.util.Base64;
 @Service
 public class EncryptionService {
 
-    private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
+    private static final Logger logger = LogManager.getLogger(EncryptionService.class);
 
     Cipher cipher;
 
@@ -53,7 +52,7 @@ public class EncryptionService {
         logger.info("Method encrypt called for the following string: " + plainText);
         cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, getAesKey());
-        return Base64.getEncoder().encodeToString(cipher.doFinal(plainText.getBytes("UTF-8")));
+        return Base64.getEncoder().encodeToString(cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8)));
     }
 
     /**
@@ -73,7 +72,7 @@ public class EncryptionService {
      */
     public String decrypt(String cipherText) throws NoSuchPaddingException, NoSuchAlgorithmException, UnrecoverableKeyException, CertificateException, KeyStoreException, IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         logger.info("Method decrypt called for the following string: " + cipherText);
-        Cipher cipher = Cipher.getInstance("AES");
+        cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, getAesKey());
         return new String(cipher.doFinal(Base64.getDecoder().decode(cipherText)));
     }

@@ -1,6 +1,5 @@
 package hr.assecosee.internship.expensemanager.core;
 
-import hr.assecosee.internship.expensemanager.ExpenseManagerApplication;
 import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import hr.assecosee.internship.expensemanager.database.entity.Category;
 import hr.assecosee.internship.expensemanager.database.repository.CategoryRepository;
@@ -18,9 +17,11 @@ import java.util.Optional;
  */
 @Service
 public class CategoryService {
+    public static final String CATEGORY_NOT_FOUND_EXCEPTION = "Category not found, throwing exception.";
+    public static final String CATEGORY_WITH_ID = "Category with id=";
     private final CategoryRepository categoryRepository;
 
-    private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
+    private static final Logger logger = LogManager.getLogger(CategoryService.class);
 
     @Autowired
     public CategoryService(CategoryRepository categoryRepository){
@@ -40,8 +41,8 @@ public class CategoryService {
             logger.info("Category retrieved.");
             return CategoryMapper.getCategoryDto(categoryOptional.get());
         } else{
-            logger.error("Category not found, throwing exception.");
-            throw new ExpenseManagerException(1, "Category with id="+categoryId+" not found!");
+            logger.error(CATEGORY_NOT_FOUND_EXCEPTION);
+            throw new ExpenseManagerException(1, CATEGORY_WITH_ID +categoryId+" not found!");
         }
     }
 
@@ -82,8 +83,8 @@ public class CategoryService {
             logger.info("Category updated.");
             return CategoryMapper.getCategoryDto(updatedCategory);
         } else {
-            logger.error("Category not found, throwing exception.");
-            throw new ExpenseManagerException(1, "Category with id="+categoryId+" does not exist!");
+            logger.error(CATEGORY_NOT_FOUND_EXCEPTION);
+            throw new ExpenseManagerException(1, CATEGORY_WITH_ID +categoryId+" does not exist!");
         }
     }
 
@@ -100,8 +101,8 @@ public class CategoryService {
             logger.info("Category deleted.");
             return new Response(0, "No error!");
         } else{
-            logger.error("Category not found, throwing exception.");
-            throw new ExpenseManagerException(1, "Category with id="+categoryId+" does not exist!");
+            logger.error(CATEGORY_NOT_FOUND_EXCEPTION);
+            throw new ExpenseManagerException(1, CATEGORY_WITH_ID +categoryId+" does not exist!");
         }
     }
 }

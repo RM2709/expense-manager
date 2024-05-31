@@ -1,6 +1,5 @@
 package hr.assecosee.internship.expensemanager.core;
 
-import hr.assecosee.internship.expensemanager.ExpenseManagerApplication;
 import hr.assecosee.internship.expensemanager.dto.ClientDto;
 import io.jsonwebtoken.Jwts;
 import org.apache.log4j.LogManager;
@@ -34,7 +33,7 @@ public class AuthenticationService {
 
     KeyStore keystore;
 
-    private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
+    private static final Logger logger = LogManager.getLogger(AuthenticationService.class);
 
     /**
      *

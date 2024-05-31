@@ -5,10 +5,12 @@ import hr.assecosee.internship.expensemanager.dto.CategoryDto;
 import hr.assecosee.internship.expensemanager.dto.StatusDto;
 import org.junit.jupiter.api.Test;
 
-public class CategoryMapperTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class CategoryMapperTest {
 
     @Test
-    public void testConvertCategory(){
+    void testConvertCategory(){
         Category testCategory = new Category();
         testCategory.setCategoryId(15);
         testCategory.setName("Test");
@@ -19,6 +21,6 @@ public class CategoryMapperTest {
         desiredResult.setName("Test");
         desiredResult.setDescription("Test");
         CategoryDto result = CategoryMapper.getCategoryDto(testCategory);
-        assert result.equals(desiredResult) : "Category to CategoryDto conversion unsuccessful";
+        assertEquals(desiredResult, result, "Category to CategoryDto conversion unsuccessful");
     }
 }

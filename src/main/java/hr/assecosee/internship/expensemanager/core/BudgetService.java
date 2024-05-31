@@ -1,6 +1,5 @@
 package hr.assecosee.internship.expensemanager.core;
 
-import hr.assecosee.internship.expensemanager.ExpenseManagerApplication;
 import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import hr.assecosee.internship.expensemanager.database.entity.Expense;
 import hr.assecosee.internship.expensemanager.database.entity.User;
@@ -8,6 +7,7 @@ import hr.assecosee.internship.expensemanager.database.repository.ExpenseReposit
 import hr.assecosee.internship.expensemanager.database.repository.UserRepository;
 import hr.assecosee.internship.expensemanager.dto.BudgetDto;
 import hr.assecosee.internship.expensemanager.dto.StatusDto;
+import hr.assecosee.internship.expensemanager.dto.TimeframeDto;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +24,12 @@ import java.util.Optional;
 @Service
 public class BudgetService {
 
+    public static final int MILISECONDS_IN_DAY = 87400000;
     private final UserRepository userRepository;
 
     private final ExpenseRepository expenseRepository;
 
-    private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
-
-    private Timestamp periodStart;
-    private Timestamp periodEnd;
+    private static final Logger logger = LogManager.getLogger(BudgetService.class);
 
     @Autowired
     public BudgetService(UserRepository userRepository, ExpenseRepository expenseRepository){
@@ -57,13 +55,13 @@ public class BudgetService {
             if(user.getBudgetDays()==null || user.getBudgetDays()==0){
                 throw new ExpenseManagerException(1, "User has no defined budget period!");
             }
-            calculatePeriod(user.getBudgetDays());
+            TimeframeDto period = calculatePeriod(user.getBudgetDays());
             BudgetDto budgetDto = new BudgetDto();
             budgetDto.setStatus(new StatusDto(0, "No error!"));
             budgetDto.setUserId(userId);
-            budgetDto.setCurrentBudgetPeriodStart(periodStart);
-            budgetDto.setCurrentBudgetPeriodEnd(periodEnd);
-            budgetDto.setRemainingAmount(calculateRemainingBudget(user));
+            budgetDto.setCurrentBudgetPeriodStart(period.getExpenseFrom());
+            budgetDto.setCurrentBudgetPeriodEnd(period.getExpenseTo());
+            budgetDto.setRemainingAmount(calculateRemainingBudget(user, period));
             logger.info("Budget calculated. Returning.");
             return budgetDto;
         } else{
@@ -72,26 +70,41 @@ public class BudgetService {
         }
     }
 
-    private Double calculateRemainingBudget(User user) {
+    /**
+     * Calculates the amount of funds remaining in a user's budget (shows negative value if user went over budget).
+     *
+     * @param user User whose remaining budget is being calculated.
+     * @param period Time period in which we're considering expenses.
+     * @return Amount of funds remaining in budget for time period.
+     */
+    private Double calculateRemainingBudget(User user, TimeframeDto period) {
         Double budget = user.getBudget();
-        for (Expense expense : expenseRepository.findAllByTimeBetweenAndUserId(periodStart, periodEnd, user.getUserId())) {
+        for (Expense expense : expenseRepository.findAllByTimeBetweenAndUserId(period.getExpenseFrom(), period.getExpenseTo(), user.getUserId())) {
             budget -= expense.getAmount();
         }
         return budget;
     }
 
-    private void calculatePeriod(Integer budgetDays) {
+    /**
+     * Calculates the current budgeting period.
+     *
+     * @param budgetDays The length of a user's budgeting period in days.
+     * @return TimeframeDto object containing the start and end of the budgeting period.
+     */
+    private TimeframeDto calculatePeriod(Integer budgetDays) {
+        logger.info("Method calculatePeriod called with budget days = " + budgetDays);
         Timestamp currentTime = new Timestamp(Calendar.getInstance().getTime().getTime());
-        periodStart = new Timestamp(currentTime.getYear(), currentTime.getMonth(), 1, 0, 0, 0, 0);
-        periodEnd = new Timestamp(periodStart.getTime());
-        periodEnd.setTime(periodStart.getTime() + (budgetDays * 24 * 60 * 60 * 1000));
+        Timestamp periodStart = new Timestamp(currentTime.getYear(), currentTime.getMonth(), 1, 0, 0, 0, 0);
+        Timestamp periodEnd = new Timestamp(currentTime.getYear(), currentTime.getMonth(), 1, 23, 59, 59, 590000000);
+        periodEnd.setTime(periodEnd.getTime() + (budgetDays * 24 * 60 * 60 * 1000));
         while(!(periodStart.before(currentTime) && periodEnd.after(currentTime))){
             periodStart.setTime(periodStart.getTime() + (budgetDays * 24 * 60 * 60 * 1000));
-            periodEnd.setTime(periodStart.getTime() + (budgetDays * 24 * 60 * 60 * 1000));
+            periodEnd.setTime(periodStart.getTime() + (budgetDays * 24 * 60 * 60 * 1000) + MILISECONDS_IN_DAY-1);
             if(periodEnd.getMonth()>currentTime.getMonth()){
-                periodEnd = new Timestamp(currentTime.getYear(), currentTime.getMonth(), YearMonth.now().atEndOfMonth().getDayOfMonth(), 0, 0, 0, 0);
+                periodEnd = new Timestamp(currentTime.getYear(), currentTime.getMonth(), YearMonth.now().atEndOfMonth().getDayOfMonth(), 23, 59, 59, 590000000);
             }
         }
+        return new TimeframeDto(periodStart, periodEnd);
     }
 
 }

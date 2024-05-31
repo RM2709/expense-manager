@@ -1,6 +1,5 @@
 package hr.assecosee.internship.expensemanager.core;
 
-import hr.assecosee.internship.expensemanager.ExpenseManagerApplication;
 import hr.assecosee.internship.expensemanager.dto.Response;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StatusService {
-    private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
+    private static final Logger logger = LogManager.getLogger(StatusService.class);
 
     /**
      * Returns the status of the application if it's working.

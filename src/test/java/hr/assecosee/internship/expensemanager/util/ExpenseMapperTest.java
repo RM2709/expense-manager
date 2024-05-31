@@ -7,10 +7,12 @@ import hr.assecosee.internship.expensemanager.dto.ExpenseDto;
 import hr.assecosee.internship.expensemanager.dto.StatusDto;
 import org.junit.jupiter.api.Test;
 
-public class ExpenseMapperTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class ExpenseMapperTest {
 
     @Test
-    public void testConvertExpense(){
+    void testConvertExpense(){
         Expense testExpense = new Expense();
         User testUser = new User();
         testUser.setUserId(15);
@@ -34,6 +36,6 @@ public class ExpenseMapperTest {
         desiredResult.setDescription("Test");
         desiredResult.setAmount(400.0);
         ExpenseDto result = ExpenseMapper.getExpenseDto(testExpense, testUser, testCategory);
-        assert result.equals(desiredResult) : "Expense to Expense conversion unsuccessful";
+        assertEquals(desiredResult, result, "Expense to Expense conversion unsuccessful");
     }
 }

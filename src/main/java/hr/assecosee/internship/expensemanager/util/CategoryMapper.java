@@ -9,6 +9,9 @@ import hr.assecosee.internship.expensemanager.dto.StatusDto;
  */
 public class CategoryMapper {
 
+    private CategoryMapper() {
+    }
+
     /**
      * Converts a Category object into a CategoryDto object.
      *

@@ -1,6 +1,5 @@
 package hr.assecosee.internship.expensemanager.core;
 
-import hr.assecosee.internship.expensemanager.ExpenseManagerApplication;
 import hr.assecosee.internship.expensemanager.database.entity.User;
 import hr.assecosee.internship.expensemanager.database.repository.UserRepository;
 import hr.assecosee.internship.expensemanager.dto.*;
@@ -10,7 +9,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -29,10 +27,12 @@ import java.util.regex.Pattern;
 @Service
 public class UserService {
 
+    public static final String USER_NOT_FOUND_EXCEPTION = "User not found, throwing exception.";
+    public static final String USER_WITH_ID = "User with id=";
     private final EncryptionService encryptionService;
     private final UserRepository userRepository;
 
-    private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
+    private static final Logger logger = LogManager.getLogger(UserService.class);
 
     @Autowired
     public UserService(EncryptionService encryptionService, UserRepository userRepository){
@@ -56,8 +56,8 @@ public class UserService {
             userOptional.get().setEmail(encryptionService.decrypt(userOptional.get().getEmail()));
             return UserMapper.getUserDto(userOptional.get());
         } else{
-            logger.error("User not found, throwing exception.");
-            throw new ExpenseManagerException(1, "User with id="+userId+" not found!");
+            logger.error(USER_NOT_FOUND_EXCEPTION);
+            throw new ExpenseManagerException(1, USER_WITH_ID +userId+" not found!");
         }
     }
 
@@ -128,8 +128,8 @@ public class UserService {
             updatedUser.setEmail(userInfo.getEmail());
             return UserMapper.getUserDto(updatedUser);
         } else {
-            logger.error("User not found, throwing exception.");
-            throw new ExpenseManagerException(1, "User with id="+userId+" does not exist!");
+            logger.error(USER_NOT_FOUND_EXCEPTION);
+            throw new ExpenseManagerException(1, USER_WITH_ID +userId+" does not exist!");
         }
     }
 
@@ -146,8 +146,8 @@ public class UserService {
             logger.info("User deleted.");
             return new Response(0, "No error!");
         } else{
-            logger.error("User not found, throwing exception.");
-            throw new ExpenseManagerException(1, "User with id="+userId+" does not exist!");
+            logger.error(USER_NOT_FOUND_EXCEPTION);
+            throw new ExpenseManagerException(1, USER_WITH_ID +userId+" does not exist!");
         }
     }
 

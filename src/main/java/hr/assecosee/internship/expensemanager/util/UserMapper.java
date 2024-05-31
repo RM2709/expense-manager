@@ -8,6 +8,11 @@ import hr.assecosee.internship.expensemanager.dto.UserDto;
  * Helper class for converting a User object into a suitable UserDto object.
  */
 public class UserMapper {
+
+    private UserMapper(){
+
+    }
+
     /**
      * Converts a User object into a UserDto object.
      *

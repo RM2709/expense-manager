@@ -5,10 +5,12 @@ import hr.assecosee.internship.expensemanager.dto.StatusDto;
 import hr.assecosee.internship.expensemanager.dto.UserDto;
 import org.junit.jupiter.api.Test;
 
-public class UserMapperTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class UserMapperTest {
 
     @Test
-    public void testConvertUser(){
+    void testConvertUser(){
         User testUser = new User();
         testUser.setUserId(15);
         testUser.setFirstName("Test");
@@ -22,6 +24,6 @@ public class UserMapperTest {
         desiredResult.setFullName("Test Test");
         desiredResult.setEmail("Test");
         UserDto result = UserMapper.getUserDto(testUser);
-        assert result.equals(desiredResult) : "User to UserDto conversion unsuccessful";
+        assertEquals(desiredResult, result, "User to UserDto conversion unsuccessful");
     }
 }

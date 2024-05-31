@@ -11,4 +11,11 @@ public class TimeframeDto {
     private Timestamp expenseFrom;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "CET")
     private Timestamp expenseTo;
+
+    public TimeframeDto(){}
+
+    public TimeframeDto(Timestamp periodStart, Timestamp periodEnd) {
+        this.expenseFrom=periodStart;
+        this.expenseTo=periodEnd;
+    }
 }

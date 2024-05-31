@@ -4,7 +4,7 @@ import hr.assecosee.internship.expensemanager.dto.Response;
 
 public class ExpenseManagerException extends Exception{
 
-    Response response;
+    final Response response;
 
     public ExpenseManagerException(Integer code, String message) {
         this.response = new Response(code, message);

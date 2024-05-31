@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -26,10 +25,11 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ExpenseServiceTest {
+class ExpenseServiceTest {
 
     @Mock
     ExpenseRepository expenseRepository;
@@ -44,13 +44,13 @@ public class ExpenseServiceTest {
     ExpenseService expenseService;
 
     @Test
-    public void getExpense_ExpenseIdIs15_ExpenseNotRetrieved(){
+    void getExpense_ExpenseIdIs15_ExpenseNotRetrieved(){
         assertThrows(ExpenseManagerException.class, () -> expenseService.getExpense(15), "Expense with ID 15 retrieved when it should not exist");
     }
 
 
     @Test
-    public void createExpense_WrongUserIdProvided_ExpenseNotCreated(){
+    void createExpense_WrongUserIdProvided_ExpenseNotCreated(){
         ExpenseInfoDto expenseInfo = new ExpenseInfoDto();
         expenseInfo.setUserId(15);
         assertThrows(ExpenseManagerException.class, () -> expenseService.createExpense(expenseInfo), "Category created successfully when wrong user Id was provided");
@@ -58,7 +58,7 @@ public class ExpenseServiceTest {
 
 
     @Test
-    public void updateExpense_WrongExpenseInfoProvided_ExpenseNotUpdated(){
+    void updateExpense_WrongExpenseInfoProvided_ExpenseNotUpdated(){
         ExpenseInfoDto expenseInfo = new ExpenseInfoDto();
         expenseInfo.setUserId(15);
         expenseInfo.setCategoryId(15);
@@ -71,27 +71,27 @@ public class ExpenseServiceTest {
 
 
     @Test
-    public void deleteExpense_ExpenseIdProvided_ExpenseDeleted() throws ExpenseManagerException {
+    void deleteExpense_ExpenseIdProvided_ExpenseDeleted() throws ExpenseManagerException {
         Expense deletedExpense = new Expense();
         deletedExpense.setExpenseId(15);
         when(expenseRepository.findById(15)).thenReturn(Optional.of(deletedExpense));
-        assert expenseService.deleteExpense(15).equals(new Response(0, "No error!")) : "Expense not deleted properly";
+        assertEquals(new Response(0, "No error!"), expenseService.deleteExpense(15), "Expense not deleted properly");
     }
 
     @Test
-    public void getExpensesByUser_UserDoesNotExist_ExpensesNotRetrieved(){
+    void getExpensesByUser_UserDoesNotExist_ExpensesNotRetrieved(){
         when(userRepository.findById(15)).thenReturn(Optional.empty());
         assertThrows(ExpenseManagerException.class, () -> expenseService.getExpensesByUser(15), "Expenses retrieved when wrong user id was given");
     }
 
     @Test
-    public void getExpensesByCategory_CategoryDoesNotExist_ExpensesNotRetrieved() {
+    void getExpensesByCategory_CategoryDoesNotExist_ExpensesNotRetrieved() {
         when(categoryRepository.findById(15)).thenReturn(Optional.empty());
         assertThrows(ExpenseManagerException.class, () ->  expenseService.getExpensesByCategory(15), "Expenses retrieved when wrong category id was given");
     }
 
     @Test
-    public void getExpensesByTimeframe_ShortTimeframe_ExpenseListEmpty() throws UnrecoverableKeyException, NoSuchPaddingException, IllegalBlockSizeException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, BadPaddingException, InvalidKeyException {
+    void getExpensesByTimeframe_ShortTimeframe_ExpenseListEmpty() throws UnrecoverableKeyException, NoSuchPaddingException, IllegalBlockSizeException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, BadPaddingException, InvalidKeyException {
         ExpensesByCategoryDto expensesByTimeframeDto = new ExpensesByCategoryDto();
         StatusDto status = new StatusDto(0, "No error!");
         expensesByTimeframeDto.setStatus(status);
@@ -100,7 +100,7 @@ public class ExpenseServiceTest {
         timeFrame.setExpenseFrom(new Timestamp(1724000100000L));
         timeFrame.setExpenseTo(new Timestamp(1724000100000L));
         when(expenseRepository.findAllByTimeBetween(timeFrame.getExpenseFrom(), timeFrame.getExpenseTo())).thenReturn(new ArrayList<>());
-        assert expenseService.getExpensesByTimeframe(timeFrame).equals(expensesByTimeframeDto) : "Expense list is not empty when it should be";
+        assertEquals(expensesByTimeframeDto, expenseService.getExpensesByTimeframe(timeFrame), "Expense list is not empty when it should be");
     }
 
 

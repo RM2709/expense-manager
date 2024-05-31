@@ -10,6 +10,11 @@ import hr.assecosee.internship.expensemanager.dto.StatusDto;
  * Helper class for converting an Expense object into a suitable ExpenseDto object.
  */
 public class ExpenseMapper {
+
+    private ExpenseMapper(){
+
+    }
+
     /**
      * Converts an Expense object into an ExpenseDto object.
      *

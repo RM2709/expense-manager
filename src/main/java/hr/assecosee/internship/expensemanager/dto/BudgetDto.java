@@ -1,7 +1,6 @@
 package hr.assecosee.internship.expensemanager.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.sql.Timestamp;

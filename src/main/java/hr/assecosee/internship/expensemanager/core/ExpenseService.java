@@ -1,6 +1,5 @@
 package hr.assecosee.internship.expensemanager.core;
 
-import hr.assecosee.internship.expensemanager.ExpenseManagerApplication;
 import hr.assecosee.internship.expensemanager.core.exception.ExpenseManagerException;
 import hr.assecosee.internship.expensemanager.database.entity.Category;
 import hr.assecosee.internship.expensemanager.database.entity.Expense;
@@ -30,13 +29,18 @@ import java.util.Optional;
  */
 @Service
 public class ExpenseService {
+    public static final String EXPENSE_NOT_FOUND_EXCEPTION = "Expense not found, throwing exception.";
+    public static final String NO_ERROR = "No error!";
+    public static final String EXPENSE_WITH_ID = "Expense with id=";
+    public static final String NOT_FOUND = " not found!";
+    public static final String DOES_NOT_EXIST = " does not exist!";
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ExpenseRepository expenseRepository;
 
     private final EncryptionService encryptionService;
 
-    private static final Logger logger = LogManager.getLogger(ExpenseManagerApplication.class);
+    private static final Logger logger = LogManager.getLogger(ExpenseService.class);
 
     @Autowired
     public ExpenseService(CategoryRepository categoryRepository, UserRepository userRepository, ExpenseRepository expenseRepository, EncryptionService encryptionService){
@@ -63,8 +67,8 @@ public class ExpenseService {
             user.setLastName(encryptionService.decrypt(user.getLastName()));
             return ExpenseMapper.getExpenseDto(expenseOptional.get(), user, expenseOptional.get().getCategoryByCategoryId());
         } else{
-            logger.error("Expense not found, throwing exception.");
-            throw new ExpenseManagerException(1, "Expense with id="+expenseId+" not found!");
+            logger.error(EXPENSE_NOT_FOUND_EXCEPTION);
+            throw new ExpenseManagerException(1, EXPENSE_WITH_ID +expenseId+ NOT_FOUND);
         }
     }
 
@@ -79,12 +83,12 @@ public class ExpenseService {
         Optional<User> userOptional = userRepository.findById(expenseInfo.getUserId());
         if(userOptional.isEmpty()){
             logger.error("Attempted to get user with the user id " + expenseInfo.getUserId() + ". User not found. Throwing error.");
-            throw new ExpenseManagerException(1, "User with id="+expenseInfo.getUserId()+" not found!");
+            throw new ExpenseManagerException(1, "User with id="+expenseInfo.getUserId()+ NOT_FOUND);
         }
         Optional<Category> categoryOptional = categoryRepository.findById(expenseInfo.getCategoryId());
         if(categoryOptional.isEmpty()){
             logger.error("Attempted to get category with the category id " + expenseInfo.getCategoryId() + ". Category not found. Throwing error.");
-            throw new ExpenseManagerException(1, "Category with id="+expenseInfo.getCategoryId()+" not found!");
+            throw new ExpenseManagerException(1, "Category with id="+expenseInfo.getCategoryId()+ NOT_FOUND);
         }
         Expense newExpense = new Expense();
         newExpense.setUserId(expenseInfo.getUserId());
@@ -127,8 +131,8 @@ public class ExpenseService {
             user.setLastName(encryptionService.decrypt(user.getLastName()));
             return ExpenseMapper.getExpenseDto(updatedExpense.get(), user, updatedExpense.get().getCategoryByCategoryId());
         } else{
-            logger.error("Expense not found, throwing exception.");
-            throw new ExpenseManagerException(1, "Expense with id="+expenseId+" not found!");
+            logger.error(EXPENSE_NOT_FOUND_EXCEPTION);
+            throw new ExpenseManagerException(1, EXPENSE_WITH_ID +expenseId+ NOT_FOUND);
         }
 
     }
@@ -144,10 +148,10 @@ public class ExpenseService {
         if(expenseRepository.findById(expenseId).isPresent()){
             expenseRepository.deleteById(expenseId);
             logger.info("Expense deleted.");
-            return new Response(0, "No error!");
+            return new Response(0, NO_ERROR);
         } else{
-            logger.error("Expense not found, throwing exception.");
-            throw new ExpenseManagerException(1, "Expense with id="+expenseId+" does not exist!");
+            logger.error(EXPENSE_NOT_FOUND_EXCEPTION);
+            throw new ExpenseManagerException(1, EXPENSE_WITH_ID +expenseId+ DOES_NOT_EXIST);
         }
     }
 
@@ -162,10 +166,10 @@ public class ExpenseService {
         Optional<User> userOptional = userRepository.findById(userId);
         if(userOptional.isEmpty()){
             logger.error("User not found. Throwing error.");
-            throw new ExpenseManagerException(1, "User with id="+userId+" does not exist!");
+            throw new ExpenseManagerException(1, "User with id="+userId+ DOES_NOT_EXIST);
         }
         ExpensesByUserDto expensesByUserDto = new ExpensesByUserDto();
-        StatusDto status = new StatusDto(0, "No error!");
+        StatusDto status = new StatusDto(0, NO_ERROR);
         expensesByUserDto.setStatus(status);
         UserDto user = new UserDto();
         user.setUserId(userOptional.get().getUserId());
@@ -190,10 +194,10 @@ public class ExpenseService {
         Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
         if(categoryOptional.isEmpty()){
             logger.error("Category not found. Throwing error.");
-            throw new ExpenseManagerException(1, "Category with id="+categoryId+" does not exist!");
+            throw new ExpenseManagerException(1, "Category with id="+categoryId+ DOES_NOT_EXIST);
         }
         ExpensesByCategoryDto expensesByCategoryDto = new ExpensesByCategoryDto();
-        StatusDto status = new StatusDto(0, "No error!");
+        StatusDto status = new StatusDto(0, NO_ERROR);
         expensesByCategoryDto.setStatus(status);
         CategoryDto category = new CategoryDto();
         category.setCategoryId(categoryOptional.get().getCategoryId());
@@ -216,7 +220,7 @@ public class ExpenseService {
     public ExpensesByCategoryDto getExpensesByTimeframe(TimeframeDto timeframeDto) throws UnrecoverableKeyException, NoSuchPaddingException, IllegalBlockSizeException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, BadPaddingException, InvalidKeyException {
         logger.info("Method getExpensesByTimeframe called with timeframe from "+timeframeDto.getExpenseFrom()+" to " + timeframeDto.getExpenseTo());
         ExpensesByCategoryDto expensesByTimeframeDto = new ExpensesByCategoryDto();
-        StatusDto status = new StatusDto(0, "No error!");
+        StatusDto status = new StatusDto(0, NO_ERROR);
         expensesByTimeframeDto.setStatus(status);
         for (Expense expense : expenseRepository.findAllByTimeBetween(timeframeDto.getExpenseFrom(), timeframeDto.getExpenseTo())) {
             expensesByTimeframeDto.getExpenses().add(new ExpenseDto(expense.getExpenseId(), expense.getCategoryByCategoryId().getName(), encryptionService.decrypt(expense.getUsersByUserId().getFirstName()) + " " + encryptionService.decrypt(expense.getUsersByUserId().getLastName()), encryptionService.decrypt(expense.getDescription()), expense.getAmount(), expense.getTime()));
